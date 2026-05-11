@@ -23,7 +23,7 @@ void main() {
 
   group('fetchRadioStations', () {
     test('should return list of RadioStation when response is 200', () async {
-      const jsonResponse = '[{"name":"Radio Colombia","url":"https://radio.com"},{"name":"Radio Bogotá","url":"https://bogota.com"}]';
+      const jsonResponse = '[{"name":"Radio Colombia","url":"https://radios.miservidor.cloud/cp/widgets/player/single/?p=8287"},{"name":"Radio Bogotá","url":"https://bogota.com/podcast?p=8080"}]';
 
       when(() => mockClient.get(any())).thenAnswer(
         (_) async => http.Response(jsonResponse, 200),
@@ -33,9 +33,11 @@ void main() {
 
       expect(result.length, 2);
       expect(result[0].name, 'Radio Colombia');
-      expect(result[0].url, 'https://radio.com');
+      expect(result[0].url, 'https://radios.miservidor.cloud/cp/widgets/player/single/?p=8287');
+      expect(result[0].port, '8287');
       expect(result[1].name, 'Radio Bogotá');
-      expect(result[1].url, 'https://bogota.com');
+      expect(result[1].url, 'https://bogota.com/podcast?p=8080');
+      expect(result[1].port, '8080');
     });
 
     test('should call correct endpoint', () async {
@@ -48,7 +50,7 @@ void main() {
       await dataSource.fetchRadioStations();
 
       verify(() => mockClient.get(
-            Uri.parse('${ApiConstants.backendUrl}/stations'),
+            Uri.parse(ApiConstants.backendUrl),
           )).called(1);
     });
 
@@ -73,6 +75,18 @@ void main() {
       } catch (e) {
         expect(e.toString(), contains('404'));
       }
+    });
+
+    test('should return null port when URL has no p parameter', () async {
+      const jsonResponse = '[{"name":"Radio Sin Puerto","url":"https://radio.com/stream"}]';
+
+      when(() => mockClient.get(any())).thenAnswer(
+        (_) async => http.Response(jsonResponse, 200),
+      );
+
+      final result = await dataSource.fetchRadioStations();
+
+      expect(result[0].port, isNull);
     });
   });
 }
