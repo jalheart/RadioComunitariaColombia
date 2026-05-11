@@ -257,12 +257,17 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
 
     return Consumer<FavoritesNotifier>(
       builder: (context, favoritesNotifier, _) {
+        final favorites = _stations.where((s) => favoritesNotifier.isFavorite(s.name)).toList()
+          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        final nonFavorites = _stations.where((s) => !favoritesNotifier.isFavorite(s.name)).toList()
+          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        final sortedStations = [...favorites, ...nonFavorites];
+
         return ListView.builder(
-          itemCount: _stations.length,
+          itemCount: sortedStations.length,
           itemBuilder: (context, index) {
-            final station = _stations[index];
+            final station = sortedStations[index];
             final isFavorite = favoritesNotifier.isFavorite(station.name);
-            debugPrint('Station: "${station.name}" -> isFavorite: $isFavorite, favorites: ${favoritesNotifier.favorites}');
             
             return ListTile(
               leading: _buildLogo(station.logo),
