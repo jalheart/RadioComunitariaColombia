@@ -14,18 +14,31 @@ class FavoritesNotifier extends ChangeNotifier {
   }
 
   Future<void> _loadFavorites() async {
-    _favorites = await _favoritesService.getFavorites();
+    try {
+      _favorites = await _favoritesService.getFavorites();
+    } catch (_) {
+      _favorites = [];
+    }
     _isLoading = false;
     notifyListeners();
   }
 
+  Future<void> refreshFavorites() async {
+    _favorites = await _favoritesService.getFavorites();
+    notifyListeners();
+  }
+
+  String _normalizeName(String name) {
+    return name.trim().toLowerCase();
+  }
+
   bool isFavorite(String stationName) {
-    return _favorites.contains(stationName);
+    final normalized = _normalizeName(stationName);
+    return _favorites.any((f) => _normalizeName(f) == normalized);
   }
 
   Future<void> toggleFavorite(String stationName) async {
-    await _favoritesService.toggleFavorite(stationName);
-    _favorites = await _favoritesService.getFavorites();
-    notifyListeners();
+    await _favoritesService.toggleFavorite(stationName.trim());
+    await refreshFavorites();
   }
 }

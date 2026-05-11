@@ -178,22 +178,45 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final audioService = context.watch<AudioPlayerService>();
+    context.watch<AudioPlayerService>();
+    context.watch<FavoritesNotifier>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Radio Comunitaria Colombia'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _openSettings,
-            tooltip: 'Configuración',
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _refreshStations,
-            tooltip: 'Recargar estaciones',
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'settings') {
+                _openSettings();
+              } else if (value == 'refresh') {
+                _refreshStations();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'refresh',
+                child: Row(
+                  children: [
+                    Icon(Icons.refresh),
+                    SizedBox(width: 8),
+                    Text('Recargar estaciones'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings),
+                    SizedBox(width: 8),
+                    Text('Configuración'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -232,33 +255,37 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
       return const Center(child: Text('No hay estaciones disponibles'));
     }
 
-    return ListView.builder(
-      itemCount: _stations.length,
-      itemBuilder: (context, index) {
-        final station = _stations[index];
-        final favoritesNotifier = context.watch<FavoritesNotifier>();
-        final isFavorite = favoritesNotifier.isFavorite(station.name);
-        
-        return ListTile(
-          leading: _buildLogo(station.logo),
-          title: Text(station.name),
-          subtitle: Text(station.slogan ?? station.url),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : null,
-                ),
-                onPressed: () {
-                  favoritesNotifier.toggleFavorite(station.name);
-                },
+    return Consumer<FavoritesNotifier>(
+      builder: (context, favoritesNotifier, _) {
+        return ListView.builder(
+          itemCount: _stations.length,
+          itemBuilder: (context, index) {
+            final station = _stations[index];
+            final isFavorite = favoritesNotifier.isFavorite(station.name);
+            debugPrint('Station: "${station.name}" -> isFavorite: $isFavorite, favorites: ${favoritesNotifier.favorites}');
+            
+            return ListTile(
+              leading: _buildLogo(station.logo),
+              title: Text(station.name),
+              subtitle: Text(station.slogan ?? station.url),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : null,
+                    ),
+                    onPressed: () {
+                      favoritesNotifier.toggleFavorite(station.name);
+                    },
+                  ),
+                  const Icon(Icons.play_arrow),
+                ],
               ),
-              const Icon(Icons.play_arrow),
-            ],
-          ),
-          onTap: () => _openPlayer(station),
+              onTap: () => _openPlayer(station),
+            );
+          },
         );
       },
     );
