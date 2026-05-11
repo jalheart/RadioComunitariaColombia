@@ -221,12 +221,15 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
         ],
       ),
       body: _buildBody(),
-      bottomNavigationBar: audioService.hasStation 
-          ? MiniPlayer(
-              audioService: audioService,
-              onTap: () => _openPlayer(audioService.currentStation!),
-            )
-          : null,
+      bottomNavigationBar: Consumer<AudioPlayerService>(
+        builder: (context, audioService, _) {
+          if (!audioService.hasStation) return const SizedBox.shrink();
+          return MiniPlayer(
+            audioService: audioService,
+            onTap: () => _openPlayer(audioService.currentStation!),
+          );
+        },
+      ),
     );
   }
 

@@ -105,20 +105,19 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            _buildLogo(),
-            const SizedBox(height: 32),
-            _buildStationInfo(),
-            const SizedBox(height: 40),
-            _buildSpectrumVisualizer(),
-            const SizedBox(height: 40),
-            _buildControls(),
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            children: [
+              _buildLogo(),
+              const SizedBox(height: 12),
+              _buildStationInfo(),
+              Expanded(child: _buildSpectrumVisualizer()),
+              const SizedBox(height: 20),
+              _buildControls(),
+            ],
+          ),
         ),
       ),
     );
@@ -128,8 +127,8 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     final logo = widget.station.logo;
     
     return Container(
-      width: 200,
-      height: 200,
+      width: 150,
+      height: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -179,40 +178,43 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
             textAlign: TextAlign.center,
           ),
         ],
-        const SizedBox(height: 8),
-        Text(
-          widget.station.url,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[400],
-          ),
-          textAlign: TextAlign.center,
-        ),
       ],
     );
   }
 
   Widget _buildSpectrumVisualizer() {
     return Container(
-      height: 120,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(_spectrumData.length, (index) {
           return AnimatedContainer(
             duration: const Duration(milliseconds: 100),
             width: 12,
-            height: 100 * _spectrumData[index].clamp(0.1, 1.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-              borderRadius: BorderRadius.circular(6),
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 100),
+                    width: 12,
+                    height: constraints.maxHeight * _spectrumData[index].clamp(0.1, 1.0),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.secondary,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                );
+              },
             ),
           );
         }),
