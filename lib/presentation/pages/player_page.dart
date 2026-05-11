@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../application/services/audio_player_service.dart';
+import '../../application/services/favorites_notifier.dart';
 import '../../domain/entities/radio_station.dart';
 
 final audioService = AudioPlayerService();
@@ -262,11 +264,18 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           ),
         ),
         const SizedBox(width: 24),
-        IconButton(
-          icon: const Icon(Icons.favorite_border, size: 40),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Añadido a favoritos')),
+        Consumer<FavoritesNotifier>(
+          builder: (context, favoritesNotifier, _) {
+            final isFavorite = favoritesNotifier.isFavorite(widget.station.name);
+            return IconButton(
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                size: 40,
+                color: isFavorite ? Colors.red : null,
+              ),
+              onPressed: () {
+                favoritesNotifier.toggleFavorite(widget.station.name);
+              },
             );
           },
         ),

@@ -7,6 +7,7 @@ import 'infrastructure/datasources/radio_station_local_datasource.dart';
 import 'infrastructure/repositories/radio_station_repository_impl.dart';
 import 'application/services/audio_player_service.dart';
 import 'application/services/theme_notifier.dart';
+import 'application/services/favorites_notifier.dart';
 import 'presentation/pages/player_page.dart';
 import 'presentation/pages/settings_page.dart';
 import 'presentation/widgets/mini_player.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => AudioPlayerService()),
+        ChangeNotifierProvider(create: (_) => FavoritesNotifier()),
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, _) {
@@ -234,11 +236,28 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
       itemCount: _stations.length,
       itemBuilder: (context, index) {
         final station = _stations[index];
+        final favoritesNotifier = context.watch<FavoritesNotifier>();
+        final isFavorite = favoritesNotifier.isFavorite(station.name);
+        
         return ListTile(
           leading: _buildLogo(station.logo),
           title: Text(station.name),
           subtitle: Text(station.slogan ?? station.url),
-          trailing: const Icon(Icons.play_arrow),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onPressed: () {
+                  favoritesNotifier.toggleFavorite(station.name);
+                },
+              ),
+              const Icon(Icons.play_arrow),
+            ],
+          ),
           onTap: () => _openPlayer(station),
         );
       },
