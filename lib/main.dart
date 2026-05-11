@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -52,9 +51,7 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
   void initState() {
     super.initState();
     _repository = RadioStationRepositoryImpl(
-      remoteDataSource: RadioStationRemoteDataSource(
-        corsProxy: 'https://corsproxy.io/?',
-      ),
+      remoteDataSource: RadioStationRemoteDataSource(),
       localDataSource: RadioStationLocalDataSource(),
     );
     _loadStations();
@@ -136,43 +133,6 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
       return const Icon(Icons.radio, size: 40);
     }
 
-    if (logo.startsWith('data:image')) {
-      try {
-        final base64Data = logo.split(',').last;
-        final imageBytes = base64Decode(base64Data);
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.memory(
-            imageBytes,
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.radio, size: 40),
-          ),
-        );
-      } catch (_) {
-        return const Icon(Icons.radio, size: 40);
-      }
-    }
-
-    if (_isBase64(logo)) {
-      try {
-        final imageBytes = base64Decode(logo);
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.memory(
-            imageBytes,
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.radio, size: 40),
-          ),
-        );
-      } catch (_) {
-        return const Icon(Icons.radio, size: 40);
-      }
-    }
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Image.network(
@@ -183,15 +143,6 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
         errorBuilder: (context, error, stackTrace) => const Icon(Icons.radio, size: 40),
       ),
     );
-  }
-
-  bool _isBase64(String value) {
-    try {
-      final RegExp base64Regex = RegExp(r'^[A-Za-z0-9+/]*={0,2}$');
-      return value.length % 4 == 0 && base64Regex.hasMatch(value);
-    } catch (_) {
-      return false;
-    }
   }
 
   @override

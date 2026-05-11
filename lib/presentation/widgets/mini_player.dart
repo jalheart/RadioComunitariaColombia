@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../application/services/audio_player_service.dart';
 
@@ -36,10 +35,22 @@ class MiniPlayer extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
+            SizedBox(
               width: 70,
               height: 70,
-              child: _buildLogo(station.logo),
+              child: station.logo == null || station.logo!.isEmpty
+                  ? Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.radio, size: 30),
+                    )
+                  : Image.network(
+                      station.logo!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.radio, size: 30),
+                      ),
+                    ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -84,53 +95,5 @@ class MiniPlayer extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildLogo(String? logo) {
-    if (logo == null || logo.isEmpty) {
-      return Container(
-        color: Colors.grey[300],
-        child: const Icon(Icons.radio, size: 30),
-      );
-    }
-
-    if (logo.startsWith('data:image')) {
-      try {
-        final base64Data = logo.split(',').last;
-        final imageBytes = base64Decode(base64Data);
-        return Image.memory(imageBytes, fit: BoxFit.cover);
-      } catch (_) {
-        return Container(
-          color: Colors.grey[300],
-          child: const Icon(Icons.radio, size: 30),
-        );
-      }
-    }
-
-    if (_isBase64(logo)) {
-      try {
-        final imageBytes = base64Decode(logo);
-        return Image.memory(imageBytes, fit: BoxFit.cover);
-      } catch (_) {
-        return Container(
-          color: Colors.grey[300],
-          child: const Icon(Icons.radio, size: 30),
-        );
-      }
-    }
-
-    return Image.network(logo, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(
-      color: Colors.grey[300],
-      child: const Icon(Icons.radio, size: 30),
-    ));
-  }
-
-  bool _isBase64(String value) {
-    try {
-      final RegExp base64Regex = RegExp(r'^[A-Za-z0-9+/]*={0,2}$');
-      return value.length % 4 == 0 && base64Regex.hasMatch(value);
-    } catch (_) {
-      return false;
-    }
   }
 }

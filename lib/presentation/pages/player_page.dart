@@ -1,105 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../application/services/audio_player_service.dart';
 import '../../domain/entities/radio_station.dart';
 
 final audioService = AudioPlayerService();
-
-class StationLogo extends StatefulWidget {
-  final String? logo;
-  final double size;
-
-  const StationLogo({
-    super.key,
-    this.logo,
-    this.size = 40,
-  });
-
-  @override
-  State<StationLogo> createState() => _StationLogoState();
-}
-
-class _StationLogoState extends State<StationLogo> {
-  Uint8List? _imageBytes;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadImage();
-  }
-
-  @override
-  void didUpdateWidget(StationLogo oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.logo != widget.logo) {
-      _loadImage();
-    }
-  }
-
-  Future<void> _loadImage() async {
-    if (widget.logo == null || widget.logo!.isEmpty) {
-      _imageBytes = null;
-      if (mounted) setState(() {});
-      return;
-    }
-
-    try {
-      if (widget.logo!.startsWith('data:image')) {
-        final base64Data = widget.logo!.split(',').last;
-        _imageBytes = base64Decode(base64Data);
-      } else if (_isBase64(widget.logo!)) {
-        _imageBytes = base64Decode(widget.logo!);
-      }
-    } catch (_) {
-      _imageBytes = null;
-    }
-
-    if (mounted) setState(() {});
-  }
-
-  bool _isBase64(String value) {
-    try {
-      final RegExp base64Regex = RegExp(r'^[A-Za-z0-9+/]*={0,2}$');
-      return value.length % 4 == 0 && base64Regex.hasMatch(value);
-    } catch (_) {
-      return false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_imageBytes == null) {
-      return Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(Icons.radio, size: widget.size * 0.6),
-      );
-    }
-
-    return Image.memory(
-      _imageBytes!,
-      width: widget.size,
-      height: widget.size,
-      fit: BoxFit.cover,
-      gaplessPlayback: true,
-      errorBuilder: (_, __, ___) => Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(Icons.radio, size: widget.size * 0.6),
-      ),
-    );
-  }
-}
 
 class PlayerPage extends StatefulWidget {
   final RadioStation station;
@@ -219,6 +123,8 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   }
 
   Widget _buildLogo() {
+    final logo = widget.station.logo;
+    
     return Container(
       width: 200,
       height: 200,
@@ -234,41 +140,21 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: _buildLogoImage(),
+        child: logo == null || logo.isEmpty
+            ? Container(
+                color: Colors.grey[300],
+                child: const Icon(Icons.radio, size: 100, color: Colors.grey),
+              )
+            : Image.network(
+                logo,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.radio, size: 100, color: Colors.grey),
+                ),
+              ),
       ),
     );
-  }
-
-  Widget _buildLogoImage() {
-    final logo = widget.station.logo;
-    
-    if (logo != null && !logo.startsWith('data:image') && !_isBase64(logo)) {
-      return Image.network(
-        logo,
-        width: 200,
-        height: 200,
-        fit: BoxFit.cover,
-        gaplessPlayback: true,
-        errorBuilder: (context, error, stackTrace) => Container(
-          color: Colors.grey[300],
-          child: const Icon(Icons.radio, size: 100, color: Colors.grey),
-        ),
-      );
-    }
-
-    return StationLogo(
-      logo: logo,
-      size: 200,
-    );
-  }
-
-  bool _isBase64(String value) {
-    try {
-      final RegExp base64Regex = RegExp(r'^[A-Za-z0-9+/]*={0,2}$');
-      return value.length % 4 == 0 && base64Regex.hasMatch(value);
-    } catch (_) {
-      return false;
-    }
   }
 
   Widget _buildStationInfo() {
