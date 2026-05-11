@@ -6,7 +6,9 @@ import 'infrastructure/datasources/radio_station_remote_datasource.dart';
 import 'infrastructure/datasources/radio_station_local_datasource.dart';
 import 'infrastructure/repositories/radio_station_repository_impl.dart';
 import 'application/services/audio_player_service.dart';
+import 'application/services/theme_notifier.dart';
 import 'presentation/pages/player_page.dart';
+import 'presentation/pages/settings_page.dart';
 import 'presentation/widgets/mini_player.dart';
 
 void main() async {
@@ -20,15 +22,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AudioPlayerService(),
-      child: MaterialApp(
-        title: 'Radio Comunitaria Colombia',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const RadioStationListPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => AudioPlayerService()),
+      ],
+      child: Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, _) {
+          if (themeNotifier.isLoading) {
+            return MaterialApp(
+              home: const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              ),
+            );
+          }
+          
+          return MaterialApp(
+            title: 'Radio Comunitaria Colombia',
+            theme: themeNotifier.theme,
+            home: const RadioStationListPage(),
+          );
+        },
       ),
     );
   }
@@ -128,6 +142,21 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
     );
   }
 
+  void _openSettings() {
+    final themeNotifier = context.read<ThemeNotifier>();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SettingsPage(
+          currentColor: themeNotifier.themeColor,
+          onThemeChanged: (color) {
+            themeNotifier.setThemeColor(color);
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildLogo(String? logo) {
     if (logo == null || logo.isEmpty) {
       return const Icon(Icons.radio, size: 40);
@@ -154,6 +183,11 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
         title: const Text('Radio Comunitaria Colombia'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: _openSettings,
+            tooltip: 'Configuración',
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshStations,
