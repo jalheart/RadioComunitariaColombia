@@ -1,43 +1,65 @@
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/entities/radio_station.dart';
 
 class RadioStationLocalDataSource {
-  static const String _cacheKey = 'radio_stations_cache';
-  static const String _cacheTimestampKey = 'radio_stations_timestamp';
+  static const String _boxName = 'radio_stations';
+  static const String _timestampKey = 'last_update';
   static const Duration _cacheExpiration = Duration(hours: 1);
+
+  Box? _box;
+  int? _cacheTimestamp;
+
+  Future<Box> get _storage async {
+    if (_box != null && _box!.isOpen) return _box!;
+    _box = await Hive.openBox(_boxName);
+    return _box!;
+  }
 
   Future<List<RadioStation>> getRadioStations() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_cacheKey);
+      final box = await _storage;
+      final stations = <RadioStation>[];
       
-      if (jsonString != null) {
-        final List<dynamic> jsonList = json.decode(jsonString);
-        return jsonList.map((json) => _fromJson(json)).toList();
+      for (var i = 0; i < box.length; i++) {
+        final key = box.keyAt(i);
+        if (key is String && key.startsWith('station_')) {
+          final data = box.get(key);
+          if (data != null) {
+            stations.add(_fromMap(Map<String, dynamic>.from(data)));
+          }
+        }
       }
-    } catch (_) {}
-    
-    return [];
+      
+      return stations;
+    } catch (_) {
+      return [];
+    }
   }
 
   Future<void> saveRadioStations(List<RadioStation> stations) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonList = stations.map((s) => _toJson(s)).toList();
-      await prefs.setString(_cacheKey, json.encode(jsonList));
-      await prefs.setInt(_cacheTimestampKey, DateTime.now().millisecondsSinceEpoch);
+      final box = await _storage;
+      
+      await box.clear();
+      
+      for (var i = 0; i < stations.length; i++) {
+        await box.put('station_$i', _toMap(stations[i]));
+      }
+      
+      _cacheTimestamp = DateTime.now().millisecondsSinceEpoch;
+      await box.put(_timestampKey, _cacheTimestamp);
     } catch (_) {}
   }
 
   Future<bool> isCacheValid() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final timestamp = prefs.getInt(_cacheTimestampKey);
+      final box = await _storage;
+      final timestamp = box.get(_timestampKey);
       
       if (timestamp == null) return false;
       
-      final cacheTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      _cacheTimestamp = timestamp as int;
+      final cacheTime = DateTime.fromMillisecondsSinceEpoch(_cacheTimestamp!);
       return DateTime.now().difference(cacheTime) < _cacheExpiration;
     } catch (_) {
       return false;
@@ -46,13 +68,13 @@ class RadioStationLocalDataSource {
 
   Future<void> clearCache() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_cacheKey);
-      await prefs.remove(_cacheTimestampKey);
+      final box = await _storage;
+      await box.clear();
+      _cacheTimestamp = null;
     } catch (_) {}
   }
 
-  Map<String, dynamic> _toJson(RadioStation station) {
+  Map<String, dynamic> _toMap(RadioStation station) {
     return {
       'name': station.name,
       'url': station.url,
@@ -62,13 +84,13 @@ class RadioStationLocalDataSource {
     };
   }
 
-  RadioStation _fromJson(Map<String, dynamic> json) {
+  RadioStation _fromMap(Map<String, dynamic> map) {
     return RadioStation(
-      name: json['name'] as String,
-      url: json['url'] as String,
-      port: json['port'] as String?,
-      logo: json['logo'] as String?,
-      slogan: json['slogan'] as String?,
+      name: map['name'] as String,
+      url: map['url'] as String,
+      port: map['port'] as String?,
+      logo: map['logo'] as String?,
+      slogan: map['slogan'] as String?,
     );
   }
 }

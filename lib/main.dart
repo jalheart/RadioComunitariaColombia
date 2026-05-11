@@ -1,11 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'domain/entities/radio_station.dart';
 import 'infrastructure/datasources/radio_station_remote_datasource.dart';
 import 'infrastructure/datasources/radio_station_local_datasource.dart';
 import 'infrastructure/repositories/radio_station_repository_impl.dart';
+import 'application/services/audio_player_service.dart';
+import 'presentation/pages/player_page.dart';
+import 'presentation/widgets/mini_player.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 
@@ -14,13 +21,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Radio Comunitaria Colombia',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (_) => AudioPlayerService(),
+      child: MaterialApp(
+        title: 'Radio Comunitaria Colombia',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const RadioStationListPage(),
       ),
-      home: const RadioStationListPage(),
     );
   }
 }
@@ -34,7 +44,9 @@ class RadioStationListPage extends StatefulWidget {
 
 class _RadioStationListPageState extends State<RadioStationListPage> {
   late final RadioStationRepositoryImpl _repository;
-  Future<List<RadioStation>>? _stationsFuture;
+  List<RadioStation> _stations = [];
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -48,16 +60,75 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
     _loadStations();
   }
 
-  void _loadStations() {
+  Future<void> _loadStations() async {
     setState(() {
-      _stationsFuture = _repository.getRadioStations();
+      _isLoading = true;
+      _error = null;
     });
+    
+    try {
+      final stations = await _repository.getRadioStations();
+      if (mounted) {
+        setState(() {
+          _stations = stations;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  void _refreshStations() async {
+  Future<void> _refreshStations() async {
     setState(() {
-      _stationsFuture = _repository.refreshRadioStations();
+      _isLoading = true;
     });
+    
+    try {
+      final stations = await _repository.refreshRadioStations();
+      if (mounted) {
+        setState(() {
+          _stations = stations;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _openPlayer(RadioStation station) async {
+    final audioService = context.read<AudioPlayerService>();
+    await audioService.play(station);
+    
+    if (!mounted) return;
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlayerPage(
+          station: station,
+          onMinimize: () {
+            audioService.minimize();
+            Navigator.pop(context);
+          },
+          onClose: () {
+            audioService.stop();
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
   }
 
   Widget _buildLogo(String? logo) {
@@ -125,6 +196,8 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final audioService = context.watch<AudioPlayerService>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Radio Comunitaria Colombia'),
@@ -137,54 +210,53 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
           ),
         ],
       ),
-      body: FutureBuilder<List<RadioStation>>(
-        future: _stationsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: _buildBody(),
+      bottomNavigationBar: audioService.hasStation 
+          ? MiniPlayer(
+              audioService: audioService,
+              onTap: () => _openPlayer(audioService.currentStation!),
+            )
+          : null,
+    );
+  }
 
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Error: ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _loadStations,
-                    child: const Text('Reintentar'),
-                  ),
-                ],
-              ),
-            );
-          }
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-          final stations = snapshot.data ?? [];
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Error: $_error'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loadStations,
+              child: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      );
+    }
 
-          if (stations.isEmpty) {
-            return const Center(child: Text('No hay estaciones disponibles'));
-          }
+    if (_stations.isEmpty) {
+      return const Center(child: Text('No hay estaciones disponibles'));
+    }
 
-          return ListView.builder(
-            itemCount: stations.length,
-            itemBuilder: (context, index) {
-              final station = stations[index];
-              return ListTile(
-                leading: _buildLogo(station.logo),
-                title: Text(station.name),
-                subtitle: Text(station.slogan ?? station.url),
-                trailing: const Icon(Icons.play_arrow),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Reproduciendo: ${station.name}')),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
+    return ListView.builder(
+      itemCount: _stations.length,
+      itemBuilder: (context, index) {
+        final station = _stations[index];
+        return ListTile(
+          leading: _buildLogo(station.logo),
+          title: Text(station.name),
+          subtitle: Text(station.slogan ?? station.url),
+          trailing: const Icon(Icons.play_arrow),
+          onTap: () => _openPlayer(station),
+        );
+      },
     );
   }
 }
