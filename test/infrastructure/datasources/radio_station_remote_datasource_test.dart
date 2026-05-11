@@ -88,5 +88,29 @@ void main() {
 
       expect(result[0].port, isNull);
     });
+
+    test('should return logo from JSON when present', () async {
+      const jsonResponse = '[{"name":"Radio Colombia","url":"https://radio.com","logo":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAA=="}]';
+
+      when(() => mockClient.get(any())).thenAnswer(
+        (_) async => http.Response(jsonResponse, 200),
+      );
+
+      final result = await dataSource.fetchRadioStations();
+
+      expect(result[0].logo, 'data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAA==');
+    });
+
+    test('should return null logo when not present in JSON', () async {
+      const jsonResponse = '[{"name":"Radio Colombia","url":"https://radio.com"}]';
+
+      when(() => mockClient.get(any())).thenAnswer(
+        (_) async => http.Response(jsonResponse, 200),
+      );
+
+      final result = await dataSource.fetchRadioStations();
+
+      expect(result[0].logo, isNull);
+    });
   });
 }
