@@ -49,4 +49,12 @@ class RadioStation {
   String toString() {
     return 'RadioStation(name: $name, url: $url, port: $port, logo: $logo, slogan: $slogan)';
   }
+
+  String get streamUrl {
+    if (port == null || port!.isEmpty) {
+      return url;
+    }
+    final uri = Uri.parse(url);
+    return '${uri.scheme}://${uri.host}:$port/stream';
+  }
 }

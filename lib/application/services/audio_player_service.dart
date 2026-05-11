@@ -27,14 +27,18 @@ class AudioPlayerService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _audioPlayer.setUrl(station.url);
+      final streamUrl = station.streamUrl;
+      debugPrint('Reproduciendo stream: $streamUrl');
+      await _audioPlayer.setUrl(streamUrl);
       await _audioPlayer.play();
       _isPlaying = true;
       _isLoading = false;
+      debugPrint('Stream iniciado correctamente');
     } catch (e) {
       _error = 'Error al reproducir: $e';
       _isPlaying = false;
       _isLoading = false;
+      debugPrint('Error al reproducir stream: $e');
     }
     notifyListeners();
 
