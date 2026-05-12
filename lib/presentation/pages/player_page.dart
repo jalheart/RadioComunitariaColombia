@@ -36,7 +36,11 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     _spectrumController.repeat();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final audioService = context.read<AudioPlayerService>();
-      audioService.play(widget.station);
+      audioService.play(widget.station).then((_) {
+        if (mounted) {
+          _startSpectrumSimulation();
+        }
+      });
     });
   }
 
@@ -214,14 +218,18 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   Widget _buildControls() {
     return Consumer<AudioPlayerService>(
       builder: (context, audioService, _) {
-        if (audioService.isLoading) {
+        final isPlaying = audioService.isPlaying;
+        final isLoading = audioService.isLoading;
+        final error = audioService.error;
+
+        if (isLoading) {
           return const CircularProgressIndicator();
         }
 
-        if (audioService.error != null) {
+        if (error != null) {
           return Column(
             children: [
-              Text(audioService.error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
+              Text(error, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _play,
@@ -232,52 +240,48 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
         }
 
         return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.stop, size: 40),
-          onPressed: () {
-            final audioService = context.read<AudioPlayerService>();
-            audioService.stop();
-            widget.onClose?.call();
-          },
-        ),
-        const SizedBox(width: 24),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          child: Consumer<AudioPlayerService>(
-            builder: (context, audioService, _) {
-              return IconButton(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.stop, size: 40),
+              onPressed: () {
+                final audioService = context.read<AudioPlayerService>();
+                audioService.stop();
+                widget.onClose?.call();
+              },
+            ),
+            const SizedBox(width: 24),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: IconButton(
                 icon: Icon(
-                  audioService.isPlaying ? Icons.pause : Icons.play_arrow,
+                  isPlaying ? Icons.pause : Icons.play_arrow,
                   size: 50,
                   color: Colors.white,
                 ),
                 onPressed: () => audioService.togglePlayPause(),
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 24),
-        Consumer<FavoritesNotifier>(
-          builder: (context, favoritesNotifier, _) {
-            final isFavorite = favoritesNotifier.isFavorite(widget.station.name);
-            return IconButton(
-              icon: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                size: 40,
-                color: isFavorite ? Colors.red : null,
               ),
-              onPressed: () {
-                favoritesNotifier.toggleFavorite(widget.station.name);
+            ),
+            const SizedBox(width: 24),
+            Consumer<FavoritesNotifier>(
+              builder: (context, favoritesNotifier, _) {
+                final isFavorite = favoritesNotifier.isFavorite(widget.station.name);
+                return IconButton(
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    size: 40,
+                    color: isFavorite ? Colors.red : null,
+                  ),
+                  onPressed: () {
+                    favoritesNotifier.toggleFavorite(widget.station.name);
+                  },
+                );
               },
-            );
-          },
-        ),
-      ],
+            ),
+          ],
         );
       },
     );

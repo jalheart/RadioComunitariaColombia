@@ -24,21 +24,26 @@ class AudioPlayerService extends ChangeNotifier {
 
   Future<void> play(RadioStation station) async {
     if (_currentStation != null && _currentStation!.url == station.url) {
+      _isLoading = false;
       if (_isMinimized) {
         _isMinimized = false;
-        notifyListeners();
       }
       if (!_isPlaying) {
-        await _audioPlayer.play();
+        unawaited(_audioPlayer.play().then((_) {
+          if (_currentStation != null) {
+            _isPlaying = false;
+            notifyListeners();
+          }
+        }));
         _isPlaying = true;
-        notifyListeners();
       }
-      debugPrint('Misma estación ya en reproducción');
+      notifyListeners();
       return;
     }
 
     if (_isPlaying && _currentStation != null) {
       await _audioPlayer.stop();
+      _isPlaying = false;
     }
 
     _currentStation = station;
@@ -49,17 +54,19 @@ class AudioPlayerService extends ChangeNotifier {
 
     try {
       final streamUrl = station.streamUrl;
-      debugPrint('Reproduciendo stream: $streamUrl');
       await _audioPlayer.setUrl(streamUrl);
-      await _audioPlayer.play();
+      unawaited(_audioPlayer.play().then((_) {
+        if (_currentStation != null) {
+          _isPlaying = false;
+          notifyListeners();
+        }
+      }));
       _isPlaying = true;
-      _isLoading = false;
-      debugPrint('Stream iniciado correctamente');
     } catch (e) {
       _error = 'Error al reproducir: $e';
       _isPlaying = false;
+    } finally {
       _isLoading = false;
-      debugPrint('Error al reproducir stream: $e');
     }
     notifyListeners();
 
@@ -79,7 +86,12 @@ class AudioPlayerService extends ChangeNotifier {
   }
 
   Future<void> resume() async {
-    await _audioPlayer.play();
+    unawaited(_audioPlayer.play().then((_) {
+      if (_currentStation != null) {
+        _isPlaying = false;
+        notifyListeners();
+      }
+    }));
     _isPlaying = true;
     notifyListeners();
   }
