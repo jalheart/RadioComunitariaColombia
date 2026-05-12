@@ -6,6 +6,12 @@ Flutter app para gestionar y reproducir estaciones de radio comunitarias de Colo
 
 ---
 
+## Reglas para Agregar Dependencias
+
+- Antes de agregar cualquier librería externa al `pubspec.yaml`, DEBES pedir permiso explícito
+- Explicar para qué se necesita y mencionar alternativas viables si existen
+- No agregar librerías sin autorización, incluso si son bien conocidas
+
 ## Arquitectura: Hexagonal (Ports & Adapters)
 
 ```
