@@ -120,22 +120,20 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
     }
   }
 
-  void _openPlayer(RadioStation station) async {
-    final audioService = context.read<AudioPlayerService>();
-    await audioService.play(station);
-    
-    if (!mounted) return;
-    
+  void _openPlayer(RadioStation station) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PlayerPage(
           station: station,
           onMinimize: () {
+            final audioService = context.read<AudioPlayerService>();
             audioService.minimize();
+            audioService.play(station);
             Navigator.pop(context);
           },
           onClose: () {
+            final audioService = context.read<AudioPlayerService>();
             audioService.stop();
             Navigator.pop(context);
           },

@@ -5,8 +5,6 @@ import '../../application/services/audio_player_service.dart';
 import '../../application/services/favorites_notifier.dart';
 import '../../domain/entities/radio_station.dart';
 
-final audioService = AudioPlayerService();
-
 class PlayerPage extends StatefulWidget {
   final RadioStation station;
   final VoidCallback? onMinimize;
@@ -24,11 +22,9 @@ class PlayerPage extends StatefulWidget {
 }
 
 class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateMixin {
-  bool _isPlaying = false;
-  bool _isLoading = true;
-  String? _error;
   late final AnimationController _spectrumController;
   final List<double> _spectrumData = List.filled(20, 0.1);
+  Timer? _spectrumTimer;
 
   @override
   void initState() {
@@ -38,51 +34,44 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 300),
     );
     _spectrumController.repeat();
-    _play();
-  }
-
-  Future<void> _play() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      await audioService.play(widget.station);
-      setState(() {
-        _isPlaying = true;
-        _isLoading = false;
-      });
-      _startSpectrumSimulation();
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _error = 'Error al reproducir: $e';
-      });
-    }
-  }
-
-  void _startSpectrumSimulation() {
-    Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (!_isPlaying) {
-        timer.cancel();
-        return;
-      }
-      
-      if (mounted) {
-        setState(() {
-          for (int i = 0; i < _spectrumData.length; i++) {
-            _spectrumData[i] = (0.2 + (i % 3) * 0.3 + (i % 5) * 0.2) * (0.5 + (i % 7) * 0.5);
-          }
-        });
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final audioService = context.read<AudioPlayerService>();
+      audioService.play(widget.station);
     });
   }
 
   @override
   void dispose() {
+    _spectrumTimer?.cancel();
     _spectrumController.dispose();
     super.dispose();
+  }
+
+  void _startSpectrumSimulation() {
+    _spectrumTimer?.cancel();
+    _spectrumTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      final audioService = context.read<AudioPlayerService>();
+      if (!audioService.isPlaying) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        for (int i = 0; i < _spectrumData.length; i++) {
+          _spectrumData[i] = (0.2 + (i % 3) * 0.3 + (i % 5) * 0.2) * (0.5 + (i % 7) * 0.5);
+        }
+      });
+    });
+  }
+
+  void _play() {
+    final audioService = context.read<AudioPlayerService>();
+    audioService.play(widget.station).then((_) {
+      _startSpectrumSimulation();
+    });
   }
 
   @override
@@ -223,29 +212,32 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   }
 
   Widget _buildControls() {
-    if (_isLoading) {
-      return const CircularProgressIndicator();
-    }
+    return Consumer<AudioPlayerService>(
+      builder: (context, audioService, _) {
+        if (audioService.isLoading) {
+          return const CircularProgressIndicator();
+        }
 
-    if (_error != null) {
-      return Column(
-        children: [
-          Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _play,
-            child: const Text('Reintentar'),
-          ),
-        ],
-      );
-    }
+        if (audioService.error != null) {
+          return Column(
+            children: [
+              Text(audioService.error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _play,
+                child: const Text('Reintentar'),
+              ),
+            ],
+          );
+        }
 
-    return Row(
+        return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
           icon: const Icon(Icons.stop, size: 40),
           onPressed: () {
+            final audioService = context.read<AudioPlayerService>();
             audioService.stop();
             widget.onClose?.call();
           },
@@ -256,13 +248,17 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
             shape: BoxShape.circle,
             color: Theme.of(context).colorScheme.primary,
           ),
-          child: IconButton(
-            icon: Icon(
-              _isPlaying ? Icons.pause : Icons.play_arrow,
-              size: 50,
-              color: Colors.white,
-            ),
-            onPressed: () => audioService.togglePlayPause(),
+          child: Consumer<AudioPlayerService>(
+            builder: (context, audioService, _) {
+              return IconButton(
+                icon: Icon(
+                  audioService.isPlaying ? Icons.pause : Icons.play_arrow,
+                  size: 50,
+                  color: Colors.white,
+                ),
+                onPressed: () => audioService.togglePlayPause(),
+              );
+            },
           ),
         ),
         const SizedBox(width: 24),
@@ -282,6 +278,8 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           },
         ),
       ],
+        );
+      },
     );
   }
 }

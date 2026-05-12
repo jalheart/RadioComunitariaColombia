@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../domain/entities/radio_station.dart';
 
 class AudioPlayerService extends ChangeNotifier {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  StreamSubscription? _playerStateSubscription;
   RadioStation? _currentStation;
   bool _isPlaying = false;
   bool _isLoading = false;
@@ -20,6 +23,24 @@ class AudioPlayerService extends ChangeNotifier {
   AudioPlayer get audioPlayer => _audioPlayer;
 
   Future<void> play(RadioStation station) async {
+    if (_currentStation != null && _currentStation!.url == station.url) {
+      if (_isMinimized) {
+        _isMinimized = false;
+        notifyListeners();
+      }
+      if (!_isPlaying) {
+        await _audioPlayer.play();
+        _isPlaying = true;
+        notifyListeners();
+      }
+      debugPrint('Misma estación ya en reproducción');
+      return;
+    }
+
+    if (_isPlaying && _currentStation != null) {
+      await _audioPlayer.stop();
+    }
+
     _currentStation = station;
     _isMinimized = false;
     _error = null;
@@ -42,7 +63,8 @@ class AudioPlayerService extends ChangeNotifier {
     }
     notifyListeners();
 
-    _audioPlayer.playerStateStream.listen((state) {
+    await _playerStateSubscription?.cancel();
+    _playerStateSubscription = _audioPlayer.playerStateStream.listen((state) {
       if (_currentStation != null) {
         _isPlaying = state.playing;
         notifyListeners();
@@ -83,6 +105,8 @@ class AudioPlayerService extends ChangeNotifier {
   }
 
   Future<void> stop() async {
+    await _playerStateSubscription?.cancel();
+    _playerStateSubscription = null;
     await _audioPlayer.stop();
     _currentStation = null;
     _isPlaying = false;
