@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../application/services/audio_player_service.dart';
@@ -59,13 +60,17 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
         return;
       }
       final audioService = context.read<AudioPlayerService>();
-      if (!audioService.isPlaying) {
-        timer.cancel();
-        return;
-      }
+      final time = DateTime.now().millisecondsSinceEpoch / 1000.0;
+
       setState(() {
+        final amplitude = audioService.isPlaying
+            ? (audioService.isBuffering ? 0.5 : 1.0)
+            : 0.1;
+
         for (int i = 0; i < _spectrumData.length; i++) {
-          _spectrumData[i] = (0.2 + (i % 3) * 0.3 + (i % 5) * 0.2) * (0.5 + (i % 7) * 0.5);
+          final wave = math.sin(time * (2.0 + i * 0.3) + i * 0.5) * 0.3 + 0.5;
+          final subWave = math.sin(time * (1.7 + i * 0.7)) * 0.15;
+          _spectrumData[i] = ((wave + subWave) * amplitude).clamp(0.05, 1.0);
         }
       });
     });

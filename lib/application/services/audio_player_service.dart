@@ -11,11 +11,13 @@ class AudioPlayerService extends ChangeNotifier {
   bool _isPlaying = false;
   bool _isLoading = false;
   String? _error;
+  bool _isBuffering = false;
   bool _isMinimized = false;
 
   RadioStation? get currentStation => _currentStation;
   bool get isPlaying => _isPlaying;
   bool get isLoading => _isLoading;
+  bool get isBuffering => _isBuffering;
   String? get error => _error;
   bool get isMinimized => _isMinimized;
   bool get hasStation => _currentStation != null;
@@ -74,6 +76,7 @@ class AudioPlayerService extends ChangeNotifier {
     _playerStateSubscription = _audioPlayer.playerStateStream.listen((state) {
       if (_currentStation != null) {
         _isPlaying = state.playing;
+        _isBuffering = state.processingState == ProcessingState.buffering;
         notifyListeners();
       }
     });
@@ -82,6 +85,7 @@ class AudioPlayerService extends ChangeNotifier {
   Future<void> pause() async {
     await _audioPlayer.pause();
     _isPlaying = false;
+    _isBuffering = false;
     notifyListeners();
   }
 
@@ -122,6 +126,7 @@ class AudioPlayerService extends ChangeNotifier {
     await _audioPlayer.stop();
     _currentStation = null;
     _isPlaying = false;
+    _isBuffering = false;
     _isMinimized = false;
     _error = null;
     notifyListeners();
