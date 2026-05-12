@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'domain/entities/radio_station.dart';
 import 'infrastructure/datasources/radio_station_remote_datasource.dart';
@@ -60,6 +62,7 @@ class RadioStationListPage extends StatefulWidget {
 class _RadioStationListPageState extends State<RadioStationListPage> {
   late final RadioStationRepositoryImpl _repository;
   List<RadioStation> _stations = [];
+  final Map<String, bool> _stationStatus = {};
   bool _isLoading = true;
   String? _error;
 
@@ -86,6 +89,7 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
           _stations = stations;
           _isLoading = false;
         });
+        _checkStreams();
       }
     } catch (e) {
       if (mounted) {
@@ -94,6 +98,26 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _checkStreams() async {
+    for (final station in _stations) {
+      final online = await _checkStream(station.streamUrl);
+      if (mounted) {
+        setState(() {
+          _stationStatus[station.name] = online;
+        });
+      }
+    }
+  }
+
+  Future<bool> _checkStream(String url) async {
+    try {
+      final response = await http.head(Uri.parse(url)).timeout(const Duration(seconds: 5));
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -109,6 +133,8 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
           _stations = stations;
           _isLoading = false;
         });
+        _stationStatus.clear();
+        _checkStreams();
       }
     } catch (e) {
       if (mounted) {
@@ -270,8 +296,26 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
             final station = sortedStations[index];
             final isFavorite = favoritesNotifier.isFavorite(station.name);
             
+            final statusColor = _stationStatus[station.name] == null
+                ? Colors.grey
+                : (_stationStatus[station.name]! ? Colors.green : Colors.red);
+
             return ListTile(
-              leading: _buildLogo(station.logo),
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 4,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: statusColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildLogo(station.logo),
+                ],
+              ),
               title: Text(station.name),
               subtitle: Text(station.slogan ?? station.url),
               trailing: Row(

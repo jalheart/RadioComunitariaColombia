@@ -71,13 +71,6 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     });
   }
 
-  void _play() {
-    final audioService = context.read<AudioPlayerService>();
-    audioService.play(widget.station).then((_) {
-      _startSpectrumSimulation();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,35 +112,72 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   Widget _buildLogo() {
     final logo = widget.station.logo;
     
-    return Container(
-      width: 150,
-      height: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: logo == null || logo.isEmpty
-            ? Container(
-                color: Colors.grey[300],
-                child: const Icon(Icons.radio, size: 100, color: Colors.grey),
+    return Consumer<AudioPlayerService>(
+      builder: (context, audioService, _) {
+        final error = audioService.error;
+        final isLoading = audioService.isLoading;
+        
+        return Stack(
+          children: [
+            Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: logo == null || logo.isEmpty
+                    ? Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.radio, size: 100, color: Colors.grey),
+                      )
+                    : Image.network(
+                        logo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.radio, size: 100, color: Colors.grey),
+                        ),
+                      ),
+              ),
+            ),
+            if (error != null)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.wifi_off, size: 16, color: Colors.white),
+                ),
               )
-            : Image.network(
-                logo,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.radio, size: 100, color: Colors.grey),
+            else if (!isLoading)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.wifi, size: 16, color: Colors.white),
                 ),
               ),
-      ),
+          ],
+        );
+      },
     );
   }
 
@@ -220,23 +250,9 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
       builder: (context, audioService, _) {
         final isPlaying = audioService.isPlaying;
         final isLoading = audioService.isLoading;
-        final error = audioService.error;
 
         if (isLoading) {
           return const CircularProgressIndicator();
-        }
-
-        if (error != null) {
-          return Column(
-            children: [
-              Text(error, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _play,
-                child: const Text('Reintentar'),
-              ),
-            ],
-          );
         }
 
         return Row(

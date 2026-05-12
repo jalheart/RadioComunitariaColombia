@@ -63,7 +63,7 @@ class AudioPlayerService extends ChangeNotifier {
       }));
       _isPlaying = true;
     } catch (e) {
-      _error = 'Error al reproducir: $e';
+      _error = 'Parece que estás offline';
       _isPlaying = false;
     } finally {
       _isLoading = false;
