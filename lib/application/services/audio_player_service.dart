@@ -131,4 +131,10 @@ class AudioPlayerService extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+  @override
+  void dispose() {
+    _playerStateSubscription?.cancel();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 }
