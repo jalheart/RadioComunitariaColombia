@@ -6,6 +6,23 @@ Flutter app para gestionar y reproducir estaciones de radio comunitarias de Colo
 
 ---
 
+## Gestión de Tareas con tasks.md
+
+- Cuando se solicite realizar una acción que implique un listado de tareas (features, refactors, correcciones, etc.), DEBES crear o actualizar el archivo `tasks.md` en la raíz del proyecto
+- `tasks.md` debe contener un desglose detallado al mínimo de cada tarea necesaria, con el formato:
+  ```markdown
+  # Tasks: {Nombre del Proyecto o Feature}
+
+  ## Tareas
+
+  - [ ] **{ID}**: {Descripción clara y accionable de la tarea}
+    - Detalle: {pasos específicos si aplica}
+  ```
+- Cada tarea debe ser atómica y accionable (una persona o agente debe poder completarla)
+- Marcar el progreso usando `[x]` para tareas completadas
+- El archivo `tasks.md` sirve como guía única de referencia; debe mantenerse actualizado durante toda la sesión
+- Al finalizar la sesión o el feature, dejar `tasks.md` en el último estado para trazabilidad
+
 ## Reglas para Agregar Dependencias
 
 - Antes de agregar cualquier librería externa al `pubspec.yaml`, DEBES pedir permiso explícito
