@@ -103,11 +103,17 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
   }
 
   void _openPlayer(RadioStation station) {
+    final metadataNotifier = context.read<AllStationsMetadataNotifier>();
+    final metadata = metadataNotifier.getMetadata(station.name);
+    final logoUrl = (metadata?.art != null && metadata!.art!.isNotEmpty)
+        ? metadata.art
+        : station.logo;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PlayerPage(
           station: station,
+          logoUrl: logoUrl,
           onMinimize: () {
             final audioService = context.read<AudioPlayerService>();
             audioService.minimize();

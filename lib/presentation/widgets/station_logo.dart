@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../infrastructure/services/logo_cache_manager.dart';
 
 class StationLogo extends StatelessWidget {
   final String? imageUrl;
@@ -34,21 +35,17 @@ class StationLogo extends StatelessWidget {
           )
         : CachedNetworkImage(
             imageUrl: imageUrl!,
+            cacheManager: LogoCacheManager(),
             width: size,
             height: size,
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              color: bgColor,
-              child: SizedBox(
-                width: size * 0.3,
-                height: size * 0.3,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
+            placeholder: (context, url) => Container(color: bgColor),
             errorWidget: (context, url, error) => Container(
               color: bgColor,
               child: Icon(Icons.radio, size: size * 0.6, color: Colors.grey),
             ),
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
           );
 
     Widget child = ClipRRect(

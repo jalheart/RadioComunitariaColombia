@@ -11,12 +11,14 @@ import '../widgets/station_logo.dart';
 
 class PlayerPage extends StatefulWidget {
   final RadioStation station;
+  final String? logoUrl;
   final VoidCallback? onMinimize;
   final VoidCallback? onClose;
 
   const PlayerPage({
     super.key, 
     required this.station,
+    this.logoUrl,
     this.onMinimize,
     this.onClose,
   });
@@ -164,13 +166,10 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     final notifier = context.watch<StationMetadataNotifier>();
     final metadata = notifier.metadata;
 
-    final art = metadata?.art;
-    final logo = (art != null && art.isNotEmpty) ? art : widget.station.logo;
-
     final isOnline = metadata != null && metadata.isOnline;
 
     return StationLogo(
-      imageUrl: logo,
+      imageUrl: widget.logoUrl,
       size: 150,
       borderRadius: 20,
       showStatus: !notifier.isLoading,
