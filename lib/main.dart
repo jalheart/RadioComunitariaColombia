@@ -26,7 +26,7 @@ void main() async {
   final audioHandler = await AudioService.init(
     builder: () => RCCAudioHandler(audioPlayer: player),
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.example.rc.channel.audio',
+      androidNotificationChannelId: 'com.jalheart.rcc.channel.audio',
       androidNotificationChannelName: 'Radio Comunitaria Colombia',
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,

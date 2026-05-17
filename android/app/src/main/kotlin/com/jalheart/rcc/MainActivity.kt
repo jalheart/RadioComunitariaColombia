@@ -1,4 +1,4 @@
-package com.example.rc
+package com.jalheart.rcc
 
 import io.flutter.embedding.android.FlutterActivity
 

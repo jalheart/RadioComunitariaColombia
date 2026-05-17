@@ -1,5 +1,5 @@
-name: rc
-description: "A new Flutter project."
+name: Radio Comunitaria de Colombia
+description: "App para gestionar y reproducir estaciones de radio comunitarias de Colombia."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
