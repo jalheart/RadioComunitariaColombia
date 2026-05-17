@@ -1,4 +1,4 @@
-name: Radio Comunitaria de Colombia
+name: "RadioComunitariaColombia"
 description: "App para gestionar y reproducir estaciones de radio comunitarias de Colombia."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
