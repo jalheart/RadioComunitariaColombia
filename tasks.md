@@ -88,7 +88,7 @@ Priorización basada en análisis del codebase (mayo 2026).
   - ✅ **18.1**: Agregar `brightness` (light/dark) al `SettingsPort` y `SettingsService` (persistir en Hive)
   - ✅ **18.2**: Ampliar `ThemeNotifier` para exponer y cambiar `brightness` (`Brightness.light` / `Brightness.dark`)
   - ✅ **18.3**: Agregar `SwitchListTile` de modo oscuro en `SettingsPage`
-  - **18.4**: Actualizar tests de `ThemeNotifier` y `SettingsService`
+  - ✅ **18.4**: Actualizar tests de `ThemeNotifier` y `SettingsService`
 
 - [ ] **#21**: Sleep timer (apagar tras N minutos)
   - **21.1**: Crear `SleepTimerService` en `application/services/` con timer countdown y estado

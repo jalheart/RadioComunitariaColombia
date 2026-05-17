@@ -60,4 +60,40 @@ void main() {
       expect(result, 0xFF222222);
     });
   });
+
+  group('getBrightness', () {
+    test('should return false (light) when no value is saved', () async {
+      final result = await service.getBrightness();
+
+      expect(result, false);
+    });
+
+    test('should return saved value after setBrightness', () async {
+      await service.setBrightness(true);
+
+      final result = await service.getBrightness();
+
+      expect(result, true);
+    });
+  });
+
+  group('setBrightness', () {
+    test('should persist brightness to Hive box', () async {
+      await service.setBrightness(true);
+
+      final box = await Hive.openBox('settings');
+      final saved = box.get('brightness');
+
+      expect(saved, true);
+    });
+
+    test('should overwrite previous brightness', () async {
+      await service.setBrightness(true);
+      await service.setBrightness(false);
+
+      final result = await service.getBrightness();
+
+      expect(result, false);
+    });
+  });
 }
