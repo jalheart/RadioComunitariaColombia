@@ -296,6 +296,8 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
             final isFavorite = favoritesNotifier.isFavorite(station.name);
             final metadataNotifier = context.watch<AllStationsMetadataNotifier>();
             final statusColor = metadataNotifier.getStatusColor(station.name);
+            final metadata = metadataNotifier.getMetadata(station.name);
+            final logoUrl = (metadata?.art != null && metadata!.art!.isNotEmpty) ? metadata.art : station.logo;
 
             return ListTile(
               leading: Row(
@@ -310,7 +312,7 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _buildLogo(station.logo),
+                  _buildLogo(logoUrl),
                 ],
               ),
               title: Text(station.name),

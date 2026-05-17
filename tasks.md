@@ -129,7 +129,7 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
 - [x] **7.2**: Verificar que al abrir una emisora en `PlayerPage` se dispare la carga de metadata
   - La metadata debe cargarse tan pronto como se entra a la página
 
-- [ ] **7.3**: Verificar que la lista de emisoras muestre online/offline basado en metadata
+- [x] **7.3**: Verificar que la lista de emisoras muestre online/offline basado en metadata
   - Tema: llamar a `AllStationsMetadataNotifier.fetchAllMetadata()` después de cargar las estaciones
 
-- [ ] **7.4**: Ejecutar `flutter analyze` y `flutter test` para asegurar que no hay regresiones
+- [x] **7.4**: Ejecutar `flutter analyze` y `flutter test` para asegurar que no hay regresiones
