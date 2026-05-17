@@ -35,8 +35,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   just_audio: ^0.9.40
+  audio_service: ^0.18.18
   provider: ^6.1.0
   cached_network_image: ^3.4.1
+  audio_session: ^0.1.25
 
 dev_dependencies:
   flutter_test:

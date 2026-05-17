@@ -56,7 +56,7 @@ Priorización basada en análisis del códigobase (mayo 2026).
 
 | # | Tarea | Descripción | Estado |
 |---|---|---|---|
-| 23 | Audio focus y background playback | Integrar `audio_session` correctamente para notificaciones y reproducción en segundo plano | [ ] |
+| 23 | Audio focus y background playback | Integrar `audio_session` correctamente para notificaciones y reproducción en segundo plano | ✅ |
 | 24 | Controles en lock screen | Play/pause/stop desde pantalla bloqueada | [ ] |
 | 25 | Deep linking | Compartir enlace directo a una emisora | [ ] |
 | 26 | Notificaciones push | Alertar cuando una emisora favorita vuelve online | [ ] |

@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../domain/entities/radio_station.dart';
+import 'rcc_audio_handler.dart';
 
 class AudioPlayerService extends ChangeNotifier {
   final AudioPlayer _audioPlayer;
-
-  AudioPlayerService({AudioPlayer? audioPlayer})
-      : _audioPlayer = audioPlayer ?? AudioPlayer();
+  final RCCAudioHandler? _handler;
   StreamSubscription? _playerStateSubscription;
   RadioStation? _currentStation;
   bool _isPlaying = false;
@@ -16,6 +15,10 @@ class AudioPlayerService extends ChangeNotifier {
   String? _error;
   bool _isBuffering = false;
   bool _isMinimized = false;
+
+  AudioPlayerService({AudioPlayer? audioPlayer, RCCAudioHandler? handler})
+      : _audioPlayer = audioPlayer ?? AudioPlayer(),
+        _handler = handler;
 
   RadioStation? get currentStation => _currentStation;
   bool get isPlaying => _isPlaying;
@@ -34,7 +37,11 @@ class AudioPlayerService extends ChangeNotifier {
         _isMinimized = false;
       }
       if (!_isPlaying) {
-        unawaited(_audioPlayer.play());
+        if (_handler != null) {
+          unawaited(_handler.play());
+        } else {
+          unawaited(_audioPlayer.play());
+        }
         _isPlaying = true;
       }
       notifyListeners();
@@ -42,7 +49,11 @@ class AudioPlayerService extends ChangeNotifier {
     }
 
     if (_isPlaying && _currentStation != null) {
-      await _audioPlayer.stop();
+      if (_handler != null) {
+        await _handler.stop();
+      } else {
+        await _audioPlayer.stop();
+      }
       _isPlaying = false;
     }
 
@@ -54,8 +65,13 @@ class AudioPlayerService extends ChangeNotifier {
 
     try {
       final streamUrl = station.streamUrl;
-      await _audioPlayer.setUrl(streamUrl);
-      unawaited(_audioPlayer.play());
+
+      if (_handler != null) {
+        await _handler.setStation(station);
+      } else {
+        await _audioPlayer.setUrl(streamUrl);
+        unawaited(_audioPlayer.play());
+      }
 
       _isPlaying = true;
     } catch (e) {
@@ -77,14 +93,22 @@ class AudioPlayerService extends ChangeNotifier {
   }
 
   Future<void> pause() async {
-    await _audioPlayer.pause();
+    if (_handler != null) {
+      await _handler.pause();
+    } else {
+      await _audioPlayer.pause();
+    }
     _isPlaying = false;
     _isBuffering = false;
     notifyListeners();
   }
 
   Future<void> resume() async {
-    unawaited(_audioPlayer.play());
+    if (_handler != null) {
+      unawaited(_handler.play());
+    } else {
+      unawaited(_audioPlayer.play());
+    }
     _isPlaying = true;
     notifyListeners();
   }
@@ -112,7 +136,11 @@ class AudioPlayerService extends ChangeNotifier {
   Future<void> stop() async {
     await _playerStateSubscription?.cancel();
     _playerStateSubscription = null;
-    await _audioPlayer.stop();
+    if (_handler != null) {
+      await _handler.stop();
+    } else {
+      await _audioPlayer.stop();
+    }
     _currentStation = null;
     _isPlaying = false;
     _isBuffering = false;
@@ -120,6 +148,7 @@ class AudioPlayerService extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
   @override
   void dispose() {
     _playerStateSubscription?.cancel();

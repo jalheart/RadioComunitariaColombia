@@ -123,13 +123,26 @@ Priorización basada en análisis del codebase (mayo 2026).
 
 ### Fase 4 — Profesionalización
 
-- [ ] **#23**: Audio focus y background playback (notificaciones, reproducción en segundo plano)
-  - **23.1**: Solicitar permiso explícito para dependencia `audio_service: ^0.18.0` o `just_audio_background: ^0.0.1-beta.X`​
-  - **23.2**: Configurar `AudioSession` en Android (foreground service type `mediaPlayback`)
-  - **23.3**: Configurar `UIBackgroundModes` (audio) en iOS `Info.plist`
-  - **23.4**: Integrar `AudioPlayerService` con notificación persistente (título, portada, botones play/pause/stop)
-  - **23.5**: Manejar eventos de audio focus (pausar al recibir llamada, reanudar al colgar)
-  - **23.6**: Tests de integración para background playback
+- ✅ **#23**: Audio focus y background playback (notificaciones, reproducción en segundo plano)
+  - ✅ **23.1**: Agregar dependencia `audio_service: ^0.18.18` (elegida sobre `just_audio_background`)
+    - Detalle: `pubspec.yaml` — línea agregada debajo de `just_audio`
+  - ✅ **23.2**: Configurar `AndroidManifest.xml` para audio_service
+    - Detalle: permisos (WAKE_LOCK, FOREGROUND_SERVICE, FOREGROUND_SERVICE_MEDIA_PLAYBACK), activity → AudioServiceActivity, service + receiver agregados
+  - ✅ **23.3**: Configurar `UIBackgroundModes` (audio) en iOS `Info.plist`
+  - ✅ **23.4**: Integrar `AudioPlayerService` con notificación persistente (título, portada, botones play/pause/stop)
+    - Detalle: Creado `RCCAudioHandler` (BaseAudioHandler) en `lib/application/services/rcc_audio_handler.dart`
+    - `AudioService.init()` en `main.dart` con configuración de canal de notificación
+    - `AudioPlayerService` delega al handler cuando disponible, fallback a AudioPlayer directo en tests
+    - Handler expone `play()`, `pause()`, `stop()`, `onTaskRemoved()`, y `setStation()` que actualiza `MediaItem` con nombre, artista y artUri
+    - Misma instancia de `AudioPlayer` compartida entre handler y service
+  - ✅ **23.5**: Manejar eventos de audio focus (pausar al recibir llamada, reanudar al colgar)
+    - Detalle: `audio_session` agregado a pubspec.yaml, configurado en `RCCAudioHandler.initAudioSession()` con `AndroidAudioUsage.media`
+    - `interruptionEventStream`: pausa en `begin + pause/unknown`, reanuda en `end + pause`
+    - `becomingNoisyEventStream`: pausa al desconectar audífonos
+    - Llamado desde `main.dart` después de `AudioService.init()`
+  - ✅ **23.6**: Tests de integración para background playback
+    - Detalle: 13 tests en `test/application/services/rcc_audio_handler_test.dart`
+    - Cubren: play/pause/stop delegation, setStation (URL, metadata, null logo, null slogan), onTaskRemoved, playerStateStream forwarding, seek, shutdown, mediaItem cleanup
 
 - [ ] **#24**: Controles en lock screen
   - **24.1**: Configurar `AudioSession` de `just_audio` para que exponga metadatos al sistema operativo (`MediaItem`)
