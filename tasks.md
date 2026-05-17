@@ -1,135 +1,125 @@
-# Tasks: Cargar Metadata de Emisoras vía radioInfoEndpoint
+# Tasks: Roadmap — RadioComunitariaColombia
 
-## Contexto
+## Completado (Feature Metadata)
 
-Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada emisora tiene un `port` extraído del query param `?p=####` de su URL. Existe la constante `radioInfoEndpoint` (`https://radios.miservidor.cloud/cp/get_info.php?p=`) que nunca se usa.
-
-**Objetivo**: Usar `radioInfoEndpoint + port` para obtener metadata en tiempo real de cada emisora (canción actual, oyentes, bitrate, artwork) y determinar si está online/offline según las reglas de negocio.
-
-**Endpoint**: `https://radios.miservidor.cloud/cp/get_info.php?p={port}`
-
-**Respuesta JSON**:
-```json
-{
-  "history": ["nombreDeLaCancion"],
-  "title": "tituloDeLaCancionActual",
-  "art": "UrlDeLaImagenQueSeUsaráComoIconoDeLaEmisora",
-  "ulisteners": 123,
-  "listeners": 123,
-  "bitrate": 128000
-}
-```
-
-**Reglas de negocio para determinar offline**:
-1. No hay respuesta del servidor (timeout/error HTTP)
-2. `history` no existe O es un arreglo vacío (`[]`)
-3. `title` está vacío (`""`)
+Todas las tareas del feature "Cargar Metadata de Emisoras vía radioInfoEndpoint" (Fases 0-7 anteriores) están completadas. Ver histórico abajo.
 
 ---
 
-## Tareas
+## Roadmap — Pendiente
 
-### Fase 0 — Corrección previa necesaria
+Priorización basada en análisis del codebase (mayo 2026).
 
-- [x] **R0**: Corregir `streamUrl` en `RadioStation` para Shoutcast
-  - Fix: Cambiar scheme de `https` a `http` y path de `/stream` a `/;stream.mp3` (formato Shoutcast)
-  - Archivos: `lib/domain/entities/radio_station.dart`, `test/domain/entities/radio_station_test.dart`
-  - Verificado: `http://radios.miservidor.cloud:8286/` responde (Shoutcast server); `https://...` no responde
+### Fase 0 — Correcciones críticas
+
+- [ ] **#1**: Arreglar `streamUrl` para que genere URL Shoutcast válida
+  - Detalle: `_extractPort` extrae `?p=8287` de la URL web y `streamUrl` lo interpreta como puerto TCP — la URL generada (`http://host:port/stream`) no funciona con Shoutcast
+  - El backend ahora devuelve `port` directamente en el JSON de cada emisora, por lo que `fetchRadioStations()` debe priorizar `json['port']` sobre `_extractPort(url)`
+  - Archivos: `lib/domain/entities/radio_station.dart`, `lib/infrastructure/datasources/radio_station_remote_datasource.dart`
+  - Tests: actualizar `test/domain/entities/radio_station_test.dart` y `test/infrastructure/datasources/radio_station_remote_datasource_test.dart`
+
+- [ ] **#2**: Corregir `play()` / `resume()` en `AudioPlayerService`
+  - Detalle: Los `.then()` callbacks setean `_isPlaying = false` después de un play exitoso
+  - Archivo: `lib/application/services/audio_player_service.dart`
+
+- [x] **#3**: Agregar `_audioPlayer.dispose()`
+  - Detalle: Ya existe `dispose()` con `_audioPlayer.dispose()` en `audio_player_service.dart:134-139`
+
+### Fase 1 — Deuda arquitectónica
+
+- [ ] **#4**: Extraer `RadioStationListPage` de `main.dart` a `presentation/pages/radio_station_list_page.dart`
+  - Archivos: `lib/main.dart` → `lib/presentation/pages/radio_station_list_page.dart`
+
+- [ ] **#5**: Crear casos de uso faltantes en `application/usecases/`
+  - Pendientes: `GetRadioStationsUseCase`, `ToggleFavoriteUseCase`
+  - Existe: `GetStationMetadataUseCase`
+
+- [ ] **#6**: Definir puertos en `application/ports/`
+  - Interfaces para: audio, favoritos, settings
+  - Directorio `lib/application/ports/` no existe actualmente
+
+- [ ] **#7**: Mover `FavoritesService` y `SettingsService` a `infrastructure/`
+  - Violación hexagonal: usan Hive (infraestructura externa) pero viven en `application/services/`
+  - Archivos: `lib/application/services/favorites_service.dart`, `lib/application/services/settings_service.dart`
+
+- [ ] **#8**: Agregar `refreshRadioStations()` y `clearCache()` a la interfaz `RadioStationRepository`
+  - Ya existen en la impl (`radio_station_repository_impl.dart`) pero no están declarados en el contrato abstracto (`domain/repositories/radio_station_repository.dart`)
+
+- [ ] **#9**: Extraer widget compartido `StationLogo`
+  - Lógica de logo duplicada en: `main.dart`, `player_page.dart`, `mini_player.dart`
+
+- [ ] **#10**: Limpiar dependencias muertas en `pubspec.yaml`
+  - Candidatos: `cupertino_icons`, `audio_session`, `shared_preferences` (declaradas pero nunca importadas)
+
+### Fase 2 — Testing
+
+- [ ] **#11**: Tests para `AudioPlayerService`
+  - Archivo: `test/application/services/audio_player_service_test.dart`
+
+- [ ] **#12**: Tests para `RadioStationLocalDataSource`
+  - Archivo: `test/infrastructure/datasources/radio_station_local_datasource_test.dart`
+
+- [ ] **#13**: Tests para `RadioStationRepositoryImpl`
+  - Archivo: `test/infrastructure/repositories/radio_station_repository_impl_test.dart`
+
+- [ ] **#14**: Tests para `FavoritesNotifier`, `ThemeNotifier`, `SettingsService`
+  - Archivos: `test/application/services/`
+
+- [ ] **#15**: Widget tests para pages y `MiniPlayer`
+  - Archivo: `test/presentation/`
+
+- [x] **#16**: Completar tests existentes
+  - `test/domain/entities/radio_station_test.dart`: tests de `streamUrl` e `infoUrl` OK
+  - `test/infrastructure/datasources/radio_station_remote_datasource_test.dart`: OK
+  - Pendiente: test de JSON malformado en `radio_station_remote_datasource_test.dart`
+
+### Fase 3 — Funcionalidades para el usuario
+
+- [ ] **#17**: Búsqueda y filtro de emisoras (nombre, online/offline)
+- [ ] **#18**: Modo oscuro (toggle light/dark además de colores de tema)
+- [ ] **#19**: Categorías / géneros para agrupar emisoras
+- [ ] **#20**: Control de volumen (slider en player page)
+- [ ] **#21**: Sleep timer (apagar tras N minutos)
+- [ ] **#22**: Parallelizar health checks (hoy secuenciales, usar `Future.wait()`)
+
+### Fase 4 — Profesionalización
+
+- [ ] **#23**: Audio focus y background playback (notificaciones, reproducción en segundo plano)
+- [ ] **#24**: Controles en lock screen
+- [ ] **#25**: Deep linking (compartir enlace directo a emisora)
+- [ ] **#26**: Notificaciones push (alertar cuando favorita vuelve online)
+- [ ] **#27**: Soporte multidioma (español e inglés con i18n)
+
+---
+
+## Histórico — Feature Metadata (Completado)
+
+### Fase 0 — Corrección previa
+- [x] **R0**: Corregir `streamUrl` en `RadioStation` para Shoutcast (http + /;stream.mp3)
 
 ### Fase 1 — Domain Layer
-
-- [x] **1.1**: Crear entidad `StationMetadata` en `lib/domain/entities/station_metadata.dart`
-  - Atributos: `history` (`List<String>`), `title` (`String?`), `art` (`String?`), `ulisteners` (`int`), `listeners` (`int`), `bitrate` (`int`)
-  - Método `bool get isOnline` que implemente las reglas de negocio:
-    - `history` no es null y no está vacío
-    - `title` no es null y no está vacío
-  - Factory `StationMetadata.fromJson(Map<String, dynamic> json)` para parsear la respuesta
-  - Implementar `==`, `hashCode`, `toString`, `copyWith`
-
-- [x] **1.2**: Agregar método `get infoUrl` a `RadioStation` en `lib/domain/entities/radio_station.dart`
-  - Retorna `$radioInfoEndpoint$port` si `port` no es null
-  - Retorna `null` si no hay port
+- [x] **1.1**: Crear entidad `StationMetadata`
+- [x] **1.2**: Agregar `infoUrl` a `RadioStation`
 
 ### Fase 2 — Infrastructure Layer
-
-- [x] **2.1**: Crear `StationMetadataRemoteDataSource` en `lib/infrastructure/datasources/station_metadata_remote_datasource.dart`
-  - Método `Future<StationMetadata?> fetchMetadata(String port)`
-  - Usar `http.Client` para GET a `radioInfoEndpoint + port`
-  - Timeout de 5 segundos
-  - Si hay error de red/timeout → retornar `null` (offline)
-  - Si status != 200 → retornar `null` (offline)
-  - Si JSON inválido → retornar `null`
-  - Si JSON válido → parsear con `StationMetadata.fromJson()` y retornarlo
-
-- [x] **2.2**: Agregar método `getStationMetadata` a `RadioStationRepository` (interfaz) en `lib/domain/repositories/radio_station_repository.dart`
-  - `Future<StationMetadata?> getStationMetadata(String port)`
-
+- [x] **2.1**: Crear `StationMetadataRemoteDataSource`
+- [x] **2.2**: Agregar `getStationMetadata` a la interfaz repository
 - [x] **2.3**: Implementar `getStationMetadata` en `RadioStationRepositoryImpl`
-  - Delegar a `StationMetadataRemoteDataSource.fetchMetadata(port)`
 
 ### Fase 3 — Application Layer
+- [x] **3.1**: Crear `GetStationMetadataUseCase`
+- [x] **3.2**: Crear `StationMetadataNotifier`
 
-- [x] **3.1**: Crear `GetStationMetadataUseCase` en `lib/application/usecases/get_station_metadata_usecase.dart`
-  - Método `Future<StationMetadata?> call(String port)`
-  - Dependencia: `RadioStationRepository`
-
-- [x] **3.2**: Crear `StationMetadataNotifier` (ChangeNotifier/Provider) en `lib/application/services/station_metadata_notifier.dart`
-  - Estado: `StationMetadata?` para la emisora actual, `bool isLoading`, `String? error`
-  - Método `Future<void> fetchMetadata(String port)` que llama al use case
-  - Exponer `StationMetadata?` para que la UI lo consuma
-
-### Fase 4 — Reemplazar Health Check Actual
-
-- [x] **4.1**: Eliminar `_checkStreams()` y `_checkStream()` de `_RadioStationListPageState` en `main.dart`
-  - Detalle: Ya no se necesita el HEAD request simple; la metadata endpoint será la fuente de verdad de online/offline
-
-- [x] **4.2**: Migrar el status indicator en la lista para que use `AllStationsMetadataNotifier`
-  - Opción: Crear un `AllStationsMetadataNotifier` que itere sobre todas las emisoras y fetchée metadata para cada una
-  - El status badge (green/red/grey) debe reflejar `metadata.isOnline`
+### Fase 4 — Reemplazar Health Check
+- [x] **4.1**: Eliminar `_checkStreams()` y `_checkStream()`
+- [x] **4.2**: Migrar status indicator a `AllStationsMetadataNotifier`
 
 ### Fase 5 — Mostrar Metadata en PlayerPage
-
 - [x] **5.1**: Consumir `StationMetadataNotifier` en `PlayerPage`
-  - Mostrar `title` (canción actual) debajo del nombre de la emisora
-  - Mostrar `listeners` / `ulisteners` como contador de oyentes en vivo
-  - Mostrar `bitrate` formateado (ej. "128 kbps")
-  - Usar `art` como imagen de fondo/logo si existe, con fallback al `logo` de la emisora
-
-- [x] **5.2**: Reemplazar el badge de conexión (wifi verde/rojo) con lógica basada en `stationMetadata.isOnline`
-  - Si `isOnline == false` → mostrar offline indicator
-  - Si `isOnline == true` → mostrar online indicator + metadata
+- [x] **5.2**: Badge online/offline redondo sin icono
 
 ### Fase 6 — Tests
+- [x] **6.1-6.4**: Tests para `StationMetadata`, datasource, `infoUrl`, use case
 
-- [x] **6.1**: Test unitario para `StationMetadata`
-  - Test: `fromJson` con JSON completo
-  - Test: `fromJson` con `history` vacío → `isOnline == false`
-  - Test: `fromJson` sin `history` → `isOnline == false`
-  - Test: `fromJson` con `title` vacío → `isOnline == false`
-  - Test: `fromJson` con datos válidos → `isOnline == true`
-
-- [x] **6.2**: Test unitario para `StationMetadataRemoteDataSource`
-  - Test: respuesta HTTP 200 con JSON válido → retorna `StationMetadata`
-  - Test: respuesta HTTP 200 con JSON inválido → retorna `null`
-  - Test: respuesta HTTP 404 → retorna `null`
-  - Test: timeout → retorna `null`
-  - Test: error de red → retorna `null`
-
-- [x] **6.3**: Test unitario para `RadioStation.infoUrl`
-  - Test: con port → retorna URL correcta
-  - Test: sin port → retorna `null`
-
-- [x] **6.4**: Test para `GetStationMetadataUseCase`
-
-### Fase 7 — Integración y Verificación
-
-- [x] **7.1**: Conectar `StationMetadataNotifier` en el árbol de providers de `main.dart`
-  - Registrar en `MultiProvider`
-
-- [x] **7.2**: Verificar que al abrir una emisora en `PlayerPage` se dispare la carga de metadata
-  - La metadata debe cargarse tan pronto como se entra a la página
-
-- [x] **7.3**: Verificar que la lista de emisoras muestre online/offline basado en metadata
-  - Tema: llamar a `AllStationsMetadataNotifier.fetchAllMetadata()` después de cargar las estaciones
-
-- [x] **7.4**: Ejecutar `flutter analyze` y `flutter test` para asegurar que no hay regresiones
+### Fase 7 — Integración
+- [x] **7.1-7.4**: Providers, carga en PlayerPage, lista online/offline, análisis + tests
