@@ -20,7 +20,7 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 |---|---|---|---|
 | 4 | Extraer `RadioStationListPage` de `main.dart` a `presentation/pages/` | `main.dart` → `presentation/pages/radio_station_list_page.dart` | ✅ |
 | 5 | Crear casos de uso en `application/` (GetRadioStationsUseCase, ToggleFavoriteUseCase, etc.) | `application/usecases/` (nuevo directorio) | ✅ |
-| 6 | Definir puertos en `application/ports/` (interfaces para audio, favoritos, settings) | `application/ports/` (hoy vacío) | [ ] |
+| 6 | Definir puertos en `application/ports/` (interfaces para audio, favoritos, settings) | `application/ports/` (hoy vacío) | ✅ |
 | 7 | Mover `FavoritesService` y `SettingsService` a `infrastructure/` | Violación hexagonal: usan Hive (externa) pero viven en `application/` | [ ] |
 | 8 | Agregar `refreshRadioStations()` y `clearCache()` a la interfaz `RadioStationRepository` | `domain/repositories/radio_station_repository.dart` | [ ] |
 | 9 | Extraer widget compartido `StationLogo` | Lógica de logo duplicada en `main.dart`, `player_page.dart` y `mini_player.dart` | [ ] |

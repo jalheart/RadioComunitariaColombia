@@ -33,7 +33,7 @@ Priorización basada en análisis del codebase (mayo 2026).
   - Pendientes: `GetRadioStationsUseCase`, `ToggleFavoriteUseCase`
   - Existe: `GetStationMetadataUseCase`
 
-- [ ] **#6**: Definir puertos en `application/ports/`
+- ✅ **#6**: Definir puertos en `application/ports/`
   - Interfaces para: audio, favoritos, settings
   - Directorio `lib/application/ports/` no existe actualmente
 
