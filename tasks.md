@@ -109,7 +109,7 @@ Priorización basada en análisis del codebase (mayo 2026).
     - Archivo: `test/application/services/sleep_timer_service_test.dart`
     - 9 tests: estado inicial, start, cancel, formattedTime, countdown, onExpired callback
 
-- [ ] **#22**: Parallelizar health checks (hoy secuenciales, usar `Future.wait()`)
+- ✅ **#22**: Parallelizar health checks (hoy secuenciales, usar `Future.wait()`)
   - ✅ **22.1**: Refactorizar `fetchAllMetadata()` en `AllStationsMetadataNotifier` para lanzar todas las llamadas en paralelo con `Future.wait()`
     - Archivo: `lib/application/services/all_stations_metadata_notifier.dart:34-58`
   - ✅ **22.2**: Manejar fallos parciales (cada `Future` atrapa su error, el `Future.wait` no falla por una)

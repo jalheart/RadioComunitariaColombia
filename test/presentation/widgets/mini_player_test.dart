@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:rc/application/services/audio_player_service.dart';
 import 'package:rc/domain/entities/radio_station.dart';
 import 'package:rc/presentation/widgets/mini_player.dart';
+import 'package:rc/presentation/widgets/station_logo.dart';
 
 class MockAudioPlayerService extends Mock implements AudioPlayerService {}
 
@@ -155,6 +156,23 @@ void main() {
         (w) => w is GestureDetector && w.child is Container,
       ));
       expect(tapped, true);
+    });
+
+    testWidgets('should use logoUrl when provided', (tester) async {
+      when(() => mockAudioService.hasStation).thenReturn(true);
+      when(() => mockAudioService.currentStation).thenReturn(station);
+      when(() => mockAudioService.isPlaying).thenReturn(true);
+
+      await tester.pumpWidget(wrapWithMaterial(
+        MiniPlayer(
+          audioService: mockAudioService,
+          onTap: () {},
+          logoUrl: 'https://example.com/logo.png',
+        ),
+      ));
+
+      final logo = tester.widget<StationLogo>(find.byType(StationLogo));
+      expect(logo.imageUrl, 'https://example.com/logo.png');
     });
   });
 }
