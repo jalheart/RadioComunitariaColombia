@@ -33,6 +33,16 @@ class StationMetadataNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchMetadataSilent(String port) async {
+    try {
+      _metadata = await _getStationMetadataUseCase.call(port);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
   void clear() {
     _metadata = null;
     _error = null;

@@ -31,6 +31,7 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   late final AnimationController _spectrumController;
   final List<double> _spectrumData = List.filled(20, 0.1);
   Timer? _spectrumTimer;
+  Timer? _metadataTimer;
 
   @override
   void initState() {
@@ -49,6 +50,13 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
       });
       if (widget.station.port != null && widget.station.port!.isNotEmpty) {
         context.read<StationMetadataNotifier>().fetchMetadata(widget.station.port!);
+        _metadataTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+          if (!mounted) {
+            timer.cancel();
+            return;
+          }
+          context.read<StationMetadataNotifier>().fetchMetadataSilent(widget.station.port!);
+        });
       }
 
       final sleepTimer = context.read<SleepTimerService>();
@@ -69,6 +77,7 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   @override
   void dispose() {
     _spectrumTimer?.cancel();
+    _metadataTimer?.cancel();
     _spectrumController.dispose();
     super.dispose();
   }
