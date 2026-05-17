@@ -21,7 +21,7 @@ class RadioStationRemoteDataSource {
         return RadioStation(
           name: json['name'] as String,
           url: url,
-          port: _extractPort(url),
+          port: (json['port']?.toString()) ?? _extractPort(url),
           logo: json['logo'] as String?,
           slogan: json['slogan'] as String?,
         );

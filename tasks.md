@@ -12,11 +12,10 @@ Priorización basada en análisis del codebase (mayo 2026).
 
 ### Fase 0 — Correcciones críticas
 
-- [ ] **#1**: Arreglar `streamUrl` para que genere URL Shoutcast válida
-  - Detalle: `_extractPort` extrae `?p=8287` de la URL web y `streamUrl` lo interpreta como puerto TCP — la URL generada (`http://host:port/stream`) no funciona con Shoutcast
-  - El backend ahora devuelve `port` directamente en el JSON de cada emisora, por lo que `fetchRadioStations()` debe priorizar `json['port']` sobre `_extractPort(url)`
-  - Archivos: `lib/domain/entities/radio_station.dart`, `lib/infrastructure/datasources/radio_station_remote_datasource.dart`
-  - Tests: actualizar `test/domain/entities/radio_station_test.dart` y `test/infrastructure/datasources/radio_station_remote_datasource_test.dart`
+- [x] **#1**: Arreglar `streamUrl` para que genere URL Shoutcast válida
+  - Detalle: `fetchRadioStations()` ahora prioriza `json['port']` sobre `_extractPort(url)`
+  - Archivo: `lib/infrastructure/datasources/radio_station_remote_datasource.dart:24`
+  - Tests: `test/infrastructure/datasources/radio_station_remote_datasource_test.dart:116-140` (2 tests agregados)
 
 - [ ] **#2**: Corregir `play()` / `resume()` en `AudioPlayerService`
   - Detalle: Los `.then()` callbacks setean `_isPlaying = false` después de un play exitoso

@@ -112,5 +112,31 @@ void main() {
 
       expect(result[0].logo, isNull);
     });
+
+    test('should prioritize json int port over extracted url port', () async {
+      const jsonResponse =
+          '[{"name":"Radio Colombia","url":"https://radios.miservidor.cloud/cp/widgets/player/single/?p=8287","port":9999}]';
+
+      when(() => mockClient.get(any())).thenAnswer(
+        (_) async => http.Response(jsonResponse, 200),
+      );
+
+      final result = await dataSource.fetchRadioStations();
+
+      expect(result[0].port, '9999');
+    });
+
+    test('should fallback to extracted url port when json port is null', () async {
+      const jsonResponse =
+          '[{"name":"Radio Colombia","url":"https://radios.miservidor.cloud/cp/widgets/player/single/?p=8287"}]';
+
+      when(() => mockClient.get(any())).thenAnswer(
+        (_) async => http.Response(jsonResponse, 200),
+      );
+
+      final result = await dataSource.fetchRadioStations();
+
+      expect(result[0].port, '8287');
+    });
   });
 }
