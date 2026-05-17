@@ -81,7 +81,8 @@ Priorización basada en análisis del codebase (mayo 2026).
   - ✅ **17.1**: Agregar `SearchController` / `SearchBar` widget en `RadioStationListPage` (filtro por nombre o slogan)
   - ✅ **17.2**: Agregar `FilterChip` o toggle para filtrar solo emisoras online/offline
   - ✅ **17.3**: Implementar lógica de búsqueda en `RadioStationListPage` (estado local o notifier) que filtre la lista en tiempo real
-  - [ ] **17.4**: Actualizar tests de `radio_station_list_page_test.dart` para cubrir búsqueda y filtro
+  - ✅ **17.4**: Actualizar tests de `radio_station_list_page_test.dart` para cubrir búsqueda y filtro
+    - Detalle: Tests usando mock repository que cubren: renderizado de search + toggle, filtro por texto (nombre), y filtro solo online
 
 - [ ] **#18**: Modo oscuro (toggle light/dark además de colores de tema)
   - **18.1**: Agregar `brightness` (light/dark) al `SettingsPort` y `SettingsService` (persistir en Hive)

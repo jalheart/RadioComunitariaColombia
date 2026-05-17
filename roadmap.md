@@ -45,7 +45,7 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 
 | # | Tarea | Descripción | Estado |
 |---|---|---|---|
-| 17 | Búsqueda y filtro de emisoras | Buscar por nombre, filtrar por online/offline | [ ] |
+| 17 | Búsqueda y filtro de emisoras | Buscar por nombre, filtrar por online/offline | ✅ |
 | 18 | Modo oscuro | Toggle light/dark además de los 8 colores de tema actuales | [ ] |
 | 19 | Categorías / géneros | Agrupar emisoras (música, noticias, cultural, deportes) | [ ] |
 | 20 | Control de volumen | Slider en la player page | [ ] |
