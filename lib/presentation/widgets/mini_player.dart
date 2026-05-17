@@ -5,11 +5,13 @@ import 'station_logo.dart';
 class MiniPlayer extends StatelessWidget {
   final AudioPlayerService audioService;
   final VoidCallback onTap;
+  final String? logoUrl;
 
   const MiniPlayer({
     super.key,
     required this.audioService,
     required this.onTap,
+    this.logoUrl,
   });
 
   @override
@@ -39,7 +41,7 @@ class MiniPlayer extends StatelessWidget {
             SizedBox(
               width: 70,
               height: 70,
-              child: StationLogo(imageUrl: station.logo, size: 70, borderRadius: 0),
+              child: StationLogo(imageUrl: logoUrl ?? station.logo, size: 70, borderRadius: 0),
             ),
             const SizedBox(width: 12),
             Expanded(

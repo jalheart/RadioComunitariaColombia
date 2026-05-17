@@ -194,9 +194,14 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
           final station = audioService.currentStation!;
           final isOnline = metadataNotifier.isOnline(station.name);
           if (isOnline != true) return const SizedBox.shrink();
+          final metadata = metadataNotifier.getMetadata(station.name);
+          final logoUrl = (metadata?.art != null && metadata!.art!.isNotEmpty)
+              ? metadata.art
+              : station.logo;
           return MiniPlayer(
             audioService: audioService,
             onTap: () => _openPlayer(audioService.currentStation!),
+            logoUrl: logoUrl,
           );
         },
       ),
