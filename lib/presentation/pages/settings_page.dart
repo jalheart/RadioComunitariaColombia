@@ -5,11 +5,15 @@ import '../../infrastructure/services/settings_service.dart';
 class SettingsPage extends StatefulWidget {
   final int currentColor;
   final ValueChanged<int> onThemeChanged;
+  final bool isDarkMode;
+  final ValueChanged<bool> onBrightnessChanged;
 
   const SettingsPage({
     super.key,
     required this.currentColor,
     required this.onThemeChanged,
+    this.isDarkMode = false,
+    required this.onBrightnessChanged,
   });
 
   @override
@@ -48,6 +52,23 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 16),
           _buildThemeSelector(),
+          const SizedBox(height: 32),
+          SwitchListTile(
+            title: const Text('Modo oscuro'),
+            subtitle: Text(
+              widget.isDarkMode ? 'Activado' : 'Desactivado',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            value: widget.isDarkMode,
+            onChanged: (value) {
+              widget.onBrightnessChanged(value);
+            },
+            secondary: Icon(
+              widget.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            ),
+          ),
         ],
       ),
     );

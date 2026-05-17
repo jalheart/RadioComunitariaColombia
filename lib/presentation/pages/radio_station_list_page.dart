@@ -134,6 +134,10 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
           onThemeChanged: (color) {
             themeNotifier.setThemeColor(color);
           },
+          isDarkMode: themeNotifier.isDarkMode,
+          onBrightnessChanged: (isDark) {
+            themeNotifier.setBrightness(isDark);
+          },
         ),
       ),
     );

@@ -26,6 +26,7 @@ void main() {
         SettingsPage(
           currentColor: 0xFF673AB7,
           onThemeChanged: (_) {},
+          onBrightnessChanged: (_) {},
         ),
       ));
 
@@ -37,6 +38,7 @@ void main() {
         SettingsPage(
           currentColor: 0xFF673AB7,
           onThemeChanged: (_) {},
+          onBrightnessChanged: (_) {},
         ),
       ));
 
@@ -49,6 +51,7 @@ void main() {
         SettingsPage(
           currentColor: 0xFF673AB7,
           onThemeChanged: (_) {},
+          onBrightnessChanged: (_) {},
         ),
       ));
 
@@ -60,6 +63,7 @@ void main() {
         SettingsPage(
           currentColor: 0xFF673AB7,
           onThemeChanged: (_) {},
+          onBrightnessChanged: (_) {},
         ),
       ));
 
@@ -73,6 +77,7 @@ void main() {
         SettingsPage(
           currentColor: 0xFF673AB7,
           onThemeChanged: (color) => selectedColor = color,
+          onBrightnessChanged: (_) {},
         ),
       ));
 
@@ -81,7 +86,7 @@ void main() {
 
       if (detectors.evaluate().length > 1) {
         await tester.runAsync(() async {
-          await tester.tap(detectors.last);
+          await tester.tap(detectors.first);
           await Future.delayed(const Duration(milliseconds: 100));
         });
         await tester.pump();
@@ -96,10 +101,60 @@ void main() {
         SettingsPage(
           currentColor: 0xFF000000,
           onThemeChanged: (_) {},
+          onBrightnessChanged: (_) {},
         ),
       ));
 
       expect(find.byIcon(Icons.check), findsNothing);
+    });
+
+    testWidgets('should render dark mode switch tile', (tester) async {
+      await tester.pumpWidget(wrapWithMaterial(
+        SettingsPage(
+          currentColor: 0xFF673AB7,
+          onThemeChanged: (_) {},
+          isDarkMode: false,
+          onBrightnessChanged: (_) {},
+        ),
+      ));
+
+      expect(find.text('Modo oscuro'), findsOneWidget);
+      expect(find.text('Desactivado'), findsOneWidget);
+      expect(find.byIcon(Icons.light_mode), findsOneWidget);
+      expect(find.byType(Switch), findsOneWidget);
+    });
+
+    testWidgets('should show dark mode active state', (tester) async {
+      await tester.pumpWidget(wrapWithMaterial(
+        SettingsPage(
+          currentColor: 0xFF673AB7,
+          onThemeChanged: (_) {},
+          isDarkMode: true,
+          onBrightnessChanged: (_) {},
+        ),
+      ));
+
+      expect(find.text('Modo oscuro'), findsOneWidget);
+      expect(find.text('Activado'), findsOneWidget);
+      expect(find.byIcon(Icons.dark_mode), findsOneWidget);
+    });
+
+    testWidgets('should call onBrightnessChanged when switch is toggled',
+        (tester) async {
+      bool? emitted;
+      await tester.pumpWidget(wrapWithMaterial(
+        SettingsPage(
+          currentColor: 0xFF673AB7,
+          onThemeChanged: (_) {},
+          isDarkMode: false,
+          onBrightnessChanged: (value) => emitted = value,
+        ),
+      ));
+
+      await tester.tap(find.byType(Switch));
+      await tester.pump();
+
+      expect(emitted, isTrue);
     });
   });
 }

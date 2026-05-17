@@ -26,4 +26,7 @@ abstract class SettingsPort {
 
   Future<int> getThemeColor();
   Future<void> setThemeColor(int color);
+
+  Future<bool> getBrightness();
+  Future<void> setBrightness(bool isDark);
 }

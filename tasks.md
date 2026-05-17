@@ -85,9 +85,9 @@ Priorización basada en análisis del codebase (mayo 2026).
     - Detalle: Tests usando mock repository que cubren: renderizado de search + toggle, filtro por texto (nombre), y filtro solo online
 
 - [ ] **#18**: Modo oscuro (toggle light/dark además de colores de tema)
-  - **18.1**: Agregar `brightness` (light/dark) al `SettingsPort` y `SettingsService` (persistir en Hive)
-  - **18.2**: Ampliar `ThemeNotifier` para exponer y cambiar `brightness` (`Brightness.light` / `Brightness.dark`)
-  - **18.3**: Agregar `SwitchListTile` de modo oscuro en `SettingsPage`
+  - ✅ **18.1**: Agregar `brightness` (light/dark) al `SettingsPort` y `SettingsService` (persistir en Hive)
+  - ✅ **18.2**: Ampliar `ThemeNotifier` para exponer y cambiar `brightness` (`Brightness.light` / `Brightness.dark`)
+  - ✅ **18.3**: Agregar `SwitchListTile` de modo oscuro en `SettingsPage`
   - **18.4**: Actualizar tests de `ThemeNotifier` y `SettingsService`
 
 - [ ] **#21**: Sleep timer (apagar tras N minutos)
