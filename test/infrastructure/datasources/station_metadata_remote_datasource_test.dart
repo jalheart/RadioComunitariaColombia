@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:rc/core/constants.dart';
-import 'package:rc/domain/entities/station_metadata.dart';
 import 'package:rc/infrastructure/datasources/station_metadata_remote_datasource.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
