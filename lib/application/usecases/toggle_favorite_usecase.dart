@@ -1,4 +1,4 @@
-import '../services/favorites_service.dart';
+import '../../infrastructure/services/favorites_service.dart';
 
 class ToggleFavoriteUseCase {
   final FavoritesService favoritesService;

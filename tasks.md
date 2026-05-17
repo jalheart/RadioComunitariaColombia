@@ -37,7 +37,7 @@ Priorización basada en análisis del codebase (mayo 2026).
   - Interfaces para: audio, favoritos, settings
   - Directorio `lib/application/ports/` no existe actualmente
 
-- [ ] **#7**: Mover `FavoritesService` y `SettingsService` a `infrastructure/`
+- ✅ **#7**: Mover `FavoritesService` y `SettingsService` a `infrastructure/`
   - Violación hexagonal: usan Hive (infraestructura externa) pero viven en `application/services/`
   - Archivos: `lib/application/services/favorites_service.dart`, `lib/application/services/settings_service.dart`
 

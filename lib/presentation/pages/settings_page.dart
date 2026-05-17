@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../application/services/settings_service.dart';
+import '../../application/ports/settings_port.dart';
+import '../../infrastructure/services/settings_service.dart';
 
 class SettingsPage extends StatefulWidget {
   final int currentColor;
@@ -53,13 +54,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildThemeSelector() {
-    final themes = SettingsService.availableThemes;
+    final themes = SettingsPort.availableThemes;
     
     return Wrap(
       spacing: 16,
       runSpacing: 16,
       children: themes.map((themeName) {
-        final colorValue = SettingsService.getColorByName(themeName);
+        final colorValue = SettingsPort.getColorByName(themeName);
         final isSelected = widget.currentColor == colorValue;
         
         return GestureDetector(

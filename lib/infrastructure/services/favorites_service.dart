@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../application/ports/favorites_port.dart';
 
-class FavoritesService {
+class FavoritesService implements FavoritesPort {
   static const String _boxName = 'favorites';
   static const String _favoritesKey = 'favorite_stations';
-  
+
   Box? _cachedBox;
 
   Future<Box> get _boxFuture async {
@@ -21,6 +22,7 @@ class FavoritesService {
     return name.trim().toLowerCase();
   }
 
+  @override
   Future<List<String>> getFavorites() async {
     try {
       final box = await _boxFuture;
@@ -34,6 +36,7 @@ class FavoritesService {
     }
   }
 
+  @override
   Future<void> addFavorite(String stationName) async {
     try {
       final box = await _boxFuture;
@@ -46,6 +49,7 @@ class FavoritesService {
     } catch (_) {}
   }
 
+  @override
   Future<void> removeFavorite(String stationName) async {
     try {
       final box = await _boxFuture;
@@ -56,12 +60,14 @@ class FavoritesService {
     } catch (_) {}
   }
 
+  @override
   Future<bool> isFavorite(String stationName) async {
     final favorites = await getFavorites();
     final normalized = _normalizeName(stationName);
     return favorites.any((f) => _normalizeName(f) == normalized);
   }
 
+  @override
   Future<void> toggleFavorite(String stationName) async {
     if (await isFavorite(stationName)) {
       await removeFavorite(stationName);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'favorites_service.dart';
+import '../../infrastructure/services/favorites_service.dart';
 
 class FavoritesNotifier extends ChangeNotifier {
   final FavoritesService _favoritesService = FavoritesService();

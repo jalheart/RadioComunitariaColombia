@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../services/settings_service.dart';
+import '../../infrastructure/services/settings_service.dart';
+import '../ports/settings_port.dart';
 
 class ThemeNotifier extends ChangeNotifier {
   final SettingsService _settingsService = SettingsService();
-  int _themeColor = SettingsService.getDefaultColor();
+  int _themeColor = SettingsPort.getDefaultColor();
   bool _isLoading = true;
 
   int get themeColor => _themeColor;
