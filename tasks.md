@@ -41,7 +41,7 @@ Priorización basada en análisis del codebase (mayo 2026).
   - Violación hexagonal: usan Hive (infraestructura externa) pero viven en `application/services/`
   - Archivos: `lib/application/services/favorites_service.dart`, `lib/application/services/settings_service.dart`
 
-- [ ] **#8**: Agregar `refreshRadioStations()` y `clearCache()` a la interfaz `RadioStationRepository`
+- ✅ **#8**: Agregar `refreshRadioStations()` y `clearCache()` a la interfaz `RadioStationRepository`
   - Ya existen en la impl (`radio_station_repository_impl.dart`) pero no están declarados en el contrato abstracto (`domain/repositories/radio_station_repository.dart`)
 
 - [ ] **#9**: Extraer widget compartido `StationLogo`
