@@ -31,23 +31,45 @@ class AllStationsMetadataNotifier extends ChangeNotifier {
     return online ? Colors.green : Colors.red;
   }
 
-  Future<void> fetchAllMetadata(List<RadioStation> stations) async {
+  Future<void> fetchAllMetadata(
+    List<RadioStation> stations, {
+    int? maxConcurrent,
+  }) async {
     _isLoading = true;
     _metadataMap.clear();
     notifyListeners();
 
-    for (final station in stations) {
-      if (station.port == null || station.port!.isEmpty) continue;
-      try {
-        final metadata = await _getStationMetadataUseCase.call(station.port!);
-        _metadataMap[station.name] = metadata;
-      } catch (_) {
-        _metadataMap[station.name] = null;
+    final stationsWithPort = stations
+        .where((s) => s.port != null && s.port!.isNotEmpty)
+        .toList();
+
+    if (maxConcurrent == null || maxConcurrent <= 0) {
+      await Future.wait(
+        stationsWithPort.map(_fetchMetadataForStation),
+      );
+    } else {
+      for (var i = 0; i < stationsWithPort.length; i += maxConcurrent) {
+        final batch = stationsWithPort.sublist(
+          i,
+          (i + maxConcurrent > stationsWithPort.length)
+              ? stationsWithPort.length
+              : i + maxConcurrent,
+        );
+        await Future.wait(batch.map(_fetchMetadataForStation));
       }
     }
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> _fetchMetadataForStation(RadioStation station) async {
+    try {
+      final metadata = await _getStationMetadataUseCase.call(station.port!);
+      _metadataMap[station.name] = metadata;
+    } catch (_) {
+      _metadataMap[station.name] = null;
+    }
   }
 
   void clear() {

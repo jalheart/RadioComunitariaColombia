@@ -110,10 +110,16 @@ Priorización basada en análisis del codebase (mayo 2026).
     - 9 tests: estado inicial, start, cancel, formattedTime, countdown, onExpired callback
 
 - [ ] **#22**: Parallelizar health checks (hoy secuenciales, usar `Future.wait()`)
-  - **22.1**: Refactorizar `fetchAllMetadata()` en `AllStationsMetadataNotifier` para lanzar todas las llamadas en paralelo con `Future.wait()`
-  - **22.2**: Manejar fallos parciales (cada `Future` atrapa su error, el `Future.wait` no falla por una)
-  - **22.3**: Agregar límite de concurrencia opcional (ej. batches de 10) para no saturar red
-  - **22.4**: Actualizar tests del notifier
+  - ✅ **22.1**: Refactorizar `fetchAllMetadata()` en `AllStationsMetadataNotifier` para lanzar todas las llamadas en paralelo con `Future.wait()`
+    - Archivo: `lib/application/services/all_stations_metadata_notifier.dart:34-58`
+  - ✅ **22.2**: Manejar fallos parciales (cada `Future` atrapa su error, el `Future.wait` no falla por una)
+    - Cada llamada individual atrapa su error en `_fetchMetadataForStation()`, `Future.wait` nunca falla
+  - ✅ **22.3**: Agregar límite de concurrencia opcional (ej. batches de 10) para no saturar red
+    - Parámetro `maxConcurrent` opcional en `fetchAllMetadata()`
+    - Si es null o ≤ 0, lanza todas en paralelo (comportamiento default)
+    - Si es > 0, procesa en batches de ese tamaño
+  - ✅ **22.4**: Agregar tests del notifier
+    - Archivo: `test/application/services/all_stations_metadata_notifier_test.dart` (9 tests)
 
 ### Fase 4 — Profesionalización
 
