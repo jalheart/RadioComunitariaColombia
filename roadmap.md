@@ -61,3 +61,4 @@ Priorización basada en análisis del códigobase (mayo 2026).
 | 25 | Deep linking | Compartir enlace directo a una emisora | [ ] |
 | 26 | Notificaciones push | Alertar cuando una emisora favorita vuelve online | [ ] |
 | 27 | Soporte multidioma | Al menos español e inglés con internacionalización (i18n) | [ ] |
+| 28 | Página de créditos y licencias | CreditsPage con info app, licencia MIT y dependencias. Acceso desde menú popup y Settings | ✅ |

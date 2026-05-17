@@ -11,6 +11,7 @@ import '../../application/services/all_stations_metadata_notifier.dart';
 import '../../application/services/theme_notifier.dart';
 import 'player_page.dart';
 import 'settings_page.dart';
+import 'credits_page.dart';
 import '../widgets/mini_player.dart';
 import '../widgets/station_logo.dart';
 
@@ -149,6 +150,15 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
     );
   }
 
+  void _openCredits() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreditsPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     context.watch<AudioPlayerService>();
@@ -178,6 +188,8 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
                 _openSettings();
               } else if (value == 'refresh') {
                 _refreshStations();
+              } else if (value == 'credits') {
+                _openCredits();
               }
             },
             itemBuilder: (context) => [
@@ -198,6 +210,16 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
                     Icon(Icons.settings),
                     SizedBox(width: 8),
                     Text('Configuración'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'credits',
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline),
+                    SizedBox(width: 8),
+                    Text('Créditos'),
                   ],
                 ),
               ),

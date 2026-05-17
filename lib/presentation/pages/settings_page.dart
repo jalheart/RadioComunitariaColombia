@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../application/ports/settings_port.dart';
 import '../../infrastructure/services/settings_service.dart';
+import 'credits_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final int currentColor;
@@ -68,6 +69,23 @@ class _SettingsPageState extends State<SettingsPage> {
             secondary: Icon(
               widget.isDarkMode ? Icons.dark_mode : Icons.light_mode,
             ),
+          ),
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: Icon(Icons.info_outline, color: Theme.of(context).colorScheme.primary),
+            title: const Text('Créditos'),
+            subtitle: const Text('Licencia y dependencias'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CreditsPage(),
+                ),
+              );
+            },
           ),
         ],
       ),

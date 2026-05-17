@@ -176,6 +176,14 @@ Priorización basada en análisis del codebase (mayo 2026).
   - **27.5**: Agregar selector de idioma en `SettingsPage`
   - **27.6**: Persistir preferencia de idioma en `SettingsService`
 
+- ✅ **#28**: Página de créditos y licencias
+  - ✅ **28.1**: Crear `CreditsPage` en `lib/presentation/pages/credits_page.dart`
+    - Info de la app (nombre, versión, logo)
+    - Licencia MIT completa
+    - Listado de dependencias con versión y tipo de licencia
+  - ✅ **28.2**: Agregar entrada "Créditos" al menú popup de `RadioStationListPage`
+  - ✅ **28.3**: Agregar enlace a Créditos desde `SettingsPage`
+
 ---
 
 ## Histórico — Feature Metadata (Completado)
