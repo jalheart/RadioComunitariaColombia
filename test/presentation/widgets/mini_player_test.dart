@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/application/services/audio_player_service.dart';
-import 'package:rc/domain/entities/radio_station.dart';
-import 'package:rc/presentation/widgets/mini_player.dart';
-import 'package:rc/presentation/widgets/station_logo.dart';
+import 'package:rcc/application/services/audio_player_service.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
+import 'package:rcc/presentation/widgets/mini_player.dart';
+import 'package:rcc/presentation/widgets/station_logo.dart';
 
 class MockAudioPlayerService extends Mock implements AudioPlayerService {}
 

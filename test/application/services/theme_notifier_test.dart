@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/application/ports/settings_port.dart';
-import 'package:rc/application/services/theme_notifier.dart';
-import 'package:rc/infrastructure/services/settings_service.dart';
+import 'package:rcc/application/ports/settings_port.dart';
+import 'package:rcc/application/services/theme_notifier.dart';
+import 'package:rcc/infrastructure/services/settings_service.dart';
 
 class MockSettingsService extends Mock implements SettingsService {}
 

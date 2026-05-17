@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
-import 'package:rc/application/services/all_stations_metadata_notifier.dart';
-import 'package:rc/application/services/audio_player_service.dart';
-import 'package:rc/application/services/favorites_notifier.dart';
-import 'package:rc/application/services/station_metadata_notifier.dart';
-import 'package:rc/application/services/theme_notifier.dart';
-import 'package:rc/application/usecases/get_station_metadata_usecase.dart';
-import 'package:rc/domain/entities/radio_station.dart';
-import 'package:rc/domain/entities/station_metadata.dart';
-import 'package:rc/infrastructure/repositories/radio_station_repository_impl.dart';
-import 'package:rc/infrastructure/services/favorites_service.dart';
-import 'package:rc/infrastructure/services/settings_service.dart';
-import 'package:rc/presentation/pages/radio_station_list_page.dart';
+import 'package:rcc/application/services/all_stations_metadata_notifier.dart';
+import 'package:rcc/application/services/audio_player_service.dart';
+import 'package:rcc/application/services/favorites_notifier.dart';
+import 'package:rcc/application/services/station_metadata_notifier.dart';
+import 'package:rcc/application/services/theme_notifier.dart';
+import 'package:rcc/application/usecases/get_station_metadata_usecase.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
+import 'package:rcc/domain/entities/station_metadata.dart';
+import 'package:rcc/infrastructure/repositories/radio_station_repository_impl.dart';
+import 'package:rcc/infrastructure/services/favorites_service.dart';
+import 'package:rcc/infrastructure/services/settings_service.dart';
+import 'package:rcc/presentation/pages/radio_station_list_page.dart';
 
 class MockRadioStationRepositoryImpl extends Mock
     implements RadioStationRepositoryImpl {}

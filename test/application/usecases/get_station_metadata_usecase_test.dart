@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/application/usecases/get_station_metadata_usecase.dart';
-import 'package:rc/domain/entities/station_metadata.dart';
-import 'package:rc/domain/repositories/radio_station_repository.dart';
+import 'package:rcc/application/usecases/get_station_metadata_usecase.dart';
+import 'package:rcc/domain/entities/station_metadata.dart';
+import 'package:rcc/domain/repositories/radio_station_repository.dart';
 
 class MockRepository extends Mock implements RadioStationRepository {}
 

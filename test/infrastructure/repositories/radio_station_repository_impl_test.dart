@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/domain/entities/radio_station.dart';
-import 'package:rc/domain/entities/station_metadata.dart';
-import 'package:rc/infrastructure/datasources/radio_station_local_datasource.dart';
-import 'package:rc/infrastructure/datasources/radio_station_remote_datasource.dart';
-import 'package:rc/infrastructure/datasources/station_metadata_remote_datasource.dart';
-import 'package:rc/infrastructure/repositories/radio_station_repository_impl.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
+import 'package:rcc/domain/entities/station_metadata.dart';
+import 'package:rcc/infrastructure/datasources/radio_station_local_datasource.dart';
+import 'package:rcc/infrastructure/datasources/radio_station_remote_datasource.dart';
+import 'package:rcc/infrastructure/datasources/station_metadata_remote_datasource.dart';
+import 'package:rcc/infrastructure/repositories/radio_station_repository_impl.dart';
 
 class MockRemoteDataSource extends Mock implements RadioStationRemoteDataSource {}
 

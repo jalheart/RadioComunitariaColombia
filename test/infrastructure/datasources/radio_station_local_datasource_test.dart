@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:rc/domain/entities/radio_station.dart';
-import 'package:rc/infrastructure/datasources/radio_station_local_datasource.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
+import 'package:rcc/infrastructure/datasources/radio_station_local_datasource.dart';
 
 void main() {
   late RadioStationLocalDataSource dataSource;

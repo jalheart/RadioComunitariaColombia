@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rc/presentation/widgets/station_logo.dart';
+import 'package:rcc/presentation/widgets/station_logo.dart';
 
 Widget wrapWithMaterial(Widget child) {
   return MaterialApp(home: Scaffold(body: child));

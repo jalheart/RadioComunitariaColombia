@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/application/services/favorites_notifier.dart';
-import 'package:rc/infrastructure/services/favorites_service.dart';
+import 'package:rcc/application/services/favorites_notifier.dart';
+import 'package:rcc/infrastructure/services/favorites_service.dart';
 
 class MockFavoritesService extends Mock implements FavoritesService {}
 

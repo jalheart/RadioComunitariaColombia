@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rc/application/services/sleep_timer_service.dart';
+import 'package:rcc/application/services/sleep_timer_service.dart';
 
 void main() {
   late SleepTimerService service;

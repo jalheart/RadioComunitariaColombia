@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:rc/presentation/pages/settings_page.dart';
+import 'package:rcc/presentation/pages/settings_page.dart';
 
 Widget wrapWithMaterial(Widget child) {
   return MaterialApp(home: child);

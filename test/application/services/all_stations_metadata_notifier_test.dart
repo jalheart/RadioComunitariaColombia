@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/application/services/all_stations_metadata_notifier.dart';
-import 'package:rc/application/usecases/get_station_metadata_usecase.dart';
-import 'package:rc/domain/entities/radio_station.dart';
-import 'package:rc/domain/entities/station_metadata.dart';
+import 'package:rcc/application/services/all_stations_metadata_notifier.dart';
+import 'package:rcc/application/usecases/get_station_metadata_usecase.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
+import 'package:rcc/domain/entities/station_metadata.dart';
 
 class MockGetStationMetadataUseCase extends Mock
     implements GetStationMetadataUseCase {}

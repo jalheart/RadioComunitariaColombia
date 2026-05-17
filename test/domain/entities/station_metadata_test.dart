@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rc/domain/entities/station_metadata.dart';
+import 'package:rcc/domain/entities/station_metadata.dart';
 
 void main() {
   group('StationMetadata', () {

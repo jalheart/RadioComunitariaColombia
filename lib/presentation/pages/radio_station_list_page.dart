@@ -156,7 +156,7 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Radio Comunitaria Colombia'),
+        title: const Text('Radio Comunitaria de Colombia'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           PopupMenuButton<String>(

@@ -27,7 +27,7 @@ void main() async {
     builder: () => RCCAudioHandler(audioPlayer: player),
     config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.jalheart.rcc.channel.audio',
-      androidNotificationChannelName: 'Radio Comunitaria Colombia',
+      androidNotificationChannelName: 'Radio Comunitaria de Colombia',
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,
     ),
@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
           }
 
           return MaterialApp(
-            title: 'Radio Comunitaria Colombia',
+            title: 'Radio Comunitaria de Colombia',
             theme: themeNotifier.theme,
             home: const RadioStationListPage(),
           );

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
-import 'package:rc/main.dart';
+import 'package:rcc/main.dart';
 
 void main() {
   setUpAll(() {

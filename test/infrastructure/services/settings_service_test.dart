@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:rc/application/ports/settings_port.dart';
-import 'package:rc/infrastructure/services/settings_service.dart';
+import 'package:rcc/application/ports/settings_port.dart';
+import 'package:rcc/infrastructure/services/settings_service.dart';
 
 void main() {
   late SettingsService service;

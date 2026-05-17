@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rc/domain/entities/radio_station.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
 
 void main() {
   group('RadioStation', () {

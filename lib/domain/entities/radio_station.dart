@@ -1,4 +1,4 @@
-import 'package:rc/core/constants.dart';
+import 'package:rcc/core/constants.dart';
 
 class RadioStation {
   final String name;

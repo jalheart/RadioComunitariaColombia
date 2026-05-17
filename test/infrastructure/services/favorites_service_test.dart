@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:rc/infrastructure/services/favorites_service.dart';
+import 'package:rcc/infrastructure/services/favorites_service.dart';
 
 void main() {
   late FavoritesService service;

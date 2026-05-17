@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rc/application/services/audio_player_service.dart';
-import 'package:rc/domain/entities/radio_station.dart';
+import 'package:rcc/application/services/audio_player_service.dart';
+import 'package:rcc/domain/entities/radio_station.dart';
 
 class MockAudioPlayer extends Mock implements AudioPlayer {}
 
