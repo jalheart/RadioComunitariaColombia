@@ -12,8 +12,8 @@ Priorización basada en análisis del codebase (mayo 2026).
 
 ### Fase 0 — Correcciones críticas
 
-- [x] **#1**: Arreglar `streamUrl` para que genere URL Shoutcast válida
-  - Detalle: `fetchRadioStations()` ahora prioriza `json['port']` sobre `_extractPort(url)`
+- ✅ **#1**: Arreglar `streamUrl` para que genere URL Shoutcast válida
+  - Detalle: `fetchRadioStations()` prioriza `json['port']` (int → String con `?.toString()`) sobre `_extractPort(url)`
   - Archivo: `lib/infrastructure/datasources/radio_station_remote_datasource.dart:24`
   - Tests: `test/infrastructure/datasources/radio_station_remote_datasource_test.dart:116-140` (2 tests agregados)
 
@@ -21,7 +21,7 @@ Priorización basada en análisis del codebase (mayo 2026).
   - Detalle: Los `.then()` callbacks setean `_isPlaying = false` después de un play exitoso
   - Archivo: `lib/application/services/audio_player_service.dart`
 
-- [x] **#3**: Agregar `_audioPlayer.dispose()`
+- ✅ **#3**: Agregar `_audioPlayer.dispose()`
   - Detalle: Ya existe `dispose()` con `_audioPlayer.dispose()` en `audio_player_service.dart:134-139`
 
 ### Fase 1 — Deuda arquitectónica
@@ -67,7 +67,7 @@ Priorización basada en análisis del codebase (mayo 2026).
 - [ ] **#15**: Widget tests para pages y `MiniPlayer`
   - Archivo: `test/presentation/`
 
-- [x] **#16**: Completar tests existentes
+- ✅ **#16**: Completar tests existentes
   - `test/domain/entities/radio_station_test.dart`: tests de `streamUrl` e `infoUrl` OK
   - `test/infrastructure/datasources/radio_station_remote_datasource_test.dart`: OK
   - Pendiente: test de JSON malformado en `radio_station_remote_datasource_test.dart`
@@ -94,31 +94,31 @@ Priorización basada en análisis del codebase (mayo 2026).
 ## Histórico — Feature Metadata (Completado)
 
 ### Fase 0 — Corrección previa
-- [x] **R0**: Corregir `streamUrl` en `RadioStation` para Shoutcast (http + /;stream.mp3)
+- ✅ **R0**: Corregir `streamUrl` en `RadioStation` para Shoutcast (http + /;stream.mp3)
 
 ### Fase 1 — Domain Layer
-- [x] **1.1**: Crear entidad `StationMetadata`
-- [x] **1.2**: Agregar `infoUrl` a `RadioStation`
+- ✅ **1.1**: Crear entidad `StationMetadata`
+- ✅ **1.2**: Agregar `infoUrl` a `RadioStation`
 
 ### Fase 2 — Infrastructure Layer
-- [x] **2.1**: Crear `StationMetadataRemoteDataSource`
-- [x] **2.2**: Agregar `getStationMetadata` a la interfaz repository
-- [x] **2.3**: Implementar `getStationMetadata` en `RadioStationRepositoryImpl`
+- ✅ **2.1**: Crear `StationMetadataRemoteDataSource`
+- ✅ **2.2**: Agregar `getStationMetadata` a la interfaz repository
+- ✅ **2.3**: Implementar `getStationMetadata` en `RadioStationRepositoryImpl`
 
 ### Fase 3 — Application Layer
-- [x] **3.1**: Crear `GetStationMetadataUseCase`
-- [x] **3.2**: Crear `StationMetadataNotifier`
+- ✅ **3.1**: Crear `GetStationMetadataUseCase`
+- ✅ **3.2**: Crear `StationMetadataNotifier`
 
 ### Fase 4 — Reemplazar Health Check
-- [x] **4.1**: Eliminar `_checkStreams()` y `_checkStream()`
-- [x] **4.2**: Migrar status indicator a `AllStationsMetadataNotifier`
+- ✅ **4.1**: Eliminar `_checkStreams()` y `_checkStream()`
+- ✅ **4.2**: Migrar status indicator a `AllStationsMetadataNotifier`
 
 ### Fase 5 — Mostrar Metadata en PlayerPage
-- [x] **5.1**: Consumir `StationMetadataNotifier` en `PlayerPage`
-- [x] **5.2**: Badge online/offline redondo sin icono
+- ✅ **5.1**: Consumir `StationMetadataNotifier` en `PlayerPage`
+- ✅ **5.2**: Badge online/offline redondo sin icono
 
 ### Fase 6 — Tests
-- [x] **6.1-6.4**: Tests para `StationMetadata`, datasource, `infoUrl`, use case
+- ✅ **6.1-6.4**: Tests para `StationMetadata`, datasource, `infoUrl`, use case
 
 ### Fase 7 — Integración
-- [x] **7.1-7.4**: Providers, carga en PlayerPage, lista online/offline, análisis + tests
+- ✅ **7.1-7.4**: Providers, carga en PlayerPage, lista online/offline, análisis + tests

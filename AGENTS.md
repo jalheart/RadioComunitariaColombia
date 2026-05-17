@@ -15,11 +15,11 @@ Flutter app para gestionar y reproducir estaciones de radio comunitarias de Colo
 
   ## Tareas
 
-  - [ ] **{ID}**: {Descripción clara y accionable de la tarea}
+  - ✅ **{ID}**: {Descripción clara y accionable de la tarea}
     - Detalle: {pasos específicos si aplica}
   ```
 - Cada tarea debe ser atómica y accionable (una persona o agente debe poder completarla)
-- Marcar el progreso usando `[x]` para tareas completadas
+- Marcar el progreso usando `✅` para tareas completadas y `[ ]` para pendientes
 - El archivo `tasks.md` sirve como guía única de referencia; debe mantenerse actualizado durante toda la sesión
 - Al finalizar la sesión o el feature, dejar `tasks.md` en el último estado para trazabilidad
 
