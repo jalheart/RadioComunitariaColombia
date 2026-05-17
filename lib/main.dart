@@ -9,6 +9,7 @@ import 'application/services/audio_player_service.dart';
 import 'application/services/theme_notifier.dart';
 import 'application/services/favorites_notifier.dart';
 import 'application/services/all_stations_metadata_notifier.dart';
+import 'application/services/sleep_timer_service.dart';
 import 'application/services/station_metadata_notifier.dart';
 import 'application/usecases/get_station_metadata_usecase.dart';
 import 'presentation/pages/radio_station_list_page.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => AudioPlayerService()),
+        ChangeNotifierProvider(create: (_) => SleepTimerService()),
         ChangeNotifierProvider(create: (_) => FavoritesNotifier()),
         Provider(create: (_) {
           final repository = RadioStationRepositoryImpl(

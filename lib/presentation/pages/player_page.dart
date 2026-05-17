@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../application/services/audio_player_service.dart';
 import '../../application/services/favorites_notifier.dart';
+import '../../application/services/sleep_timer_service.dart';
 import '../../application/services/station_metadata_notifier.dart';
 import '../../domain/entities/radio_station.dart';
 import '../widgets/station_logo.dart';
@@ -47,6 +48,19 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
       if (widget.station.port != null && widget.station.port!.isNotEmpty) {
         context.read<StationMetadataNotifier>().fetchMetadata(widget.station.port!);
       }
+
+      final sleepTimer = context.read<SleepTimerService>();
+      sleepTimer.onExpired = () {
+        if (!mounted) return;
+        audioService.stop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sleep timer completado — reproducción detenida'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        widget.onClose?.call();
+      };
     });
   }
 
@@ -81,6 +95,13 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     });
   }
 
+  void _showSleepTimerSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => _SleepTimerSheet(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,6 +110,26 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
         automaticallyImplyLeading: false,
         title: Text(widget.station.name),
         actions: [
+          Consumer<SleepTimerService>(
+            builder: (context, timer, _) {
+              final icon = timer.isActive
+                  ? Icons.timer_off_outlined
+                  : Icons.timer_outlined;
+              final tooltip = timer.isActive
+                  ? 'Sleep timer: ${timer.formattedTime}'
+                  : 'Sleep timer';
+              return IconButton(
+                icon: timer.isActive
+                    ? Badge(
+                        label: Text(timer.formattedTime),
+                        child: Icon(icon),
+                      )
+                    : Icon(icon),
+                onPressed: () => _showSleepTimerSheet(context),
+                tooltip: tooltip,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.minimize),
             onPressed: widget.onMinimize,
@@ -385,5 +426,155 @@ class _MarqueeTextState extends State<_MarqueeText> {
       scrollDirection: Axis.horizontal,
       child: Text(widget.text, style: widget.style, softWrap: false),
     );
+  }
+}
+
+class _SleepTimerSheet extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final timer = context.watch<SleepTimerService>();
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 32,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              timer.isActive
+                  ? 'Sleep timer activo — ${timer.formattedTime}'
+                  : 'Sleep timer',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ..._buildOption(
+              context: context,
+              minutes: 15,
+              timer: timer,
+            ),
+            ..._buildOption(
+              context: context,
+              minutes: 30,
+              timer: timer,
+            ),
+            ..._buildOption(
+              context: context,
+              minutes: 45,
+              timer: timer,
+            ),
+            ..._buildOption(
+              context: context,
+              minutes: 60,
+              timer: timer,
+            ),
+            const Divider(height: 24),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Personalizado'),
+              trailing: timer.durationMinutes > 0 &&
+                      ![15, 30, 45, 60].contains(timer.durationMinutes)
+                  ? Text('${timer.durationMinutes} min')
+                  : null,
+              onTap: () => _showCustomDialog(context, timer),
+            ),
+            if (timer.isActive) ...[
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () {
+                  timer.cancel();
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.timer_off, color: Colors.red),
+                label: const Text(
+                  'Cancelar sleep timer',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildOption({
+    required BuildContext context,
+    required int minutes,
+    required SleepTimerService timer,
+  }) {
+    final isActive = timer.isActive && timer.durationMinutes == minutes;
+    return [
+      ListTile(
+        leading: Icon(
+          isActive ? Icons.timer : Icons.timer_outlined,
+          color: isActive ? Theme.of(context).colorScheme.primary : null,
+        ),
+        title: Text('$minutes minutos'),
+        trailing: isActive
+            ? Icon(
+                Icons.check_circle,
+                color: Theme.of(context).colorScheme.primary,
+              )
+            : null,
+        onTap: () {
+          timer.start(minutes);
+          Navigator.pop(context);
+        },
+      ),
+    ];
+  }
+
+  Future<void> _showCustomDialog(
+      BuildContext context, SleepTimerService timer) async {
+    final controller = TextEditingController();
+    final result = await showDialog<int>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Sleep timer personalizado'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Minutos',
+            hintText: 'Ej: 90',
+            suffixText: 'min',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              final value = int.tryParse(controller.text);
+              if (value != null && value > 0) {
+                Navigator.pop(ctx, value);
+              }
+            },
+            child: const Text('Iniciar'),
+          ),
+        ],
+      ),
+    );
+    if (result != null && result > 0) {
+      timer.start(result);
+      if (context.mounted) Navigator.pop(context);
+    }
   }
 }

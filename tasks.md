@@ -90,12 +90,24 @@ Priorización basada en análisis del codebase (mayo 2026).
   - ✅ **18.3**: Agregar `SwitchListTile` de modo oscuro en `SettingsPage`
   - ✅ **18.4**: Actualizar tests de `ThemeNotifier` y `SettingsService`
 
-- [ ] **#21**: Sleep timer (apagar tras N minutos)
-  - **21.1**: Crear `SleepTimerService` en `application/services/` con timer countdown y estado
-  - **21.2**: Exponer estado del timer (tiempo restante, activo/inactivo) vía `ChangeNotifier` (+ provider)
-  - **21.3**: Agregar UI en `PlayerPage` o bottom sheet para seleccionar minutos (15, 30, 45, 60, custom)
-  - **21.4**: Al expirar: detener reproducción (llamar `stop()` en `AudioPlayerService`) y mostrar notificación/snackbar
-  - **21.5**: Agregar tests unitarios para `SleepTimerService`
+- ✅ **#21**: Sleep timer (apagar tras N minutos)
+  - ✅ **21.1**: Crear `SleepTimerService` en `application/services/` con timer countdown y estado
+    - Archivo: `lib/application/services/sleep_timer_service.dart`
+    - Extiende `ChangeNotifier`, expone `isActive`, `remainingSeconds`, `durationMinutes`, `formattedTime`
+    - Métodos: `start(minutes)`, `cancel()`, callback `onExpired` para detener reproducción
+  - ✅ **21.2**: Exponer estado del timer (tiempo restante, activo/inactivo) vía `ChangeNotifier` (+ provider)
+    - Archivo: `lib/main.dart` — registro como `ChangeNotifierProvider(create: (_) => SleepTimerService())`
+  - ✅ **21.3**: Agregar UI en `PlayerPage` o bottom sheet para seleccionar minutos (15, 30, 45, 60, custom)
+    - Archivo: `lib/presentation/pages/player_page.dart`
+    - Botón timer en AppBar con badge de tiempo restante cuando activo
+    - Bottom sheet `_SleepTimerSheet` con opciones predefinidas (15, 30, 45, 60 min) + personalizado vía `AlertDialog`
+    - Botón "Cancelar sleep timer" cuando está activo
+  - ✅ **21.4**: Al expirar: detener reproducción (llamar `stop()` en `AudioPlayerService`) y mostrar notificación/snackbar
+    - Archivo: `lib/presentation/pages/player_page.dart` — callback `onExpired` en `initState`
+    - Llama `audioService.stop()` + `widget.onClose()` + SnackBar flotante "Sleep timer completado"
+  - ✅ **21.5**: Agregar tests unitarios para `SleepTimerService`
+    - Archivo: `test/application/services/sleep_timer_service_test.dart`
+    - 9 tests: estado inicial, start, cancel, formattedTime, countdown, onExpired callback
 
 - [ ] **#22**: Parallelizar health checks (hoy secuenciales, usar `Future.wait()`)
   - **22.1**: Refactorizar `fetchAllMetadata()` en `AllStationsMetadataNotifier` para lanzar todas las llamadas en paralelo con `Future.wait()`

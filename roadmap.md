@@ -46,8 +46,8 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 | # | Tarea | Descripción | Estado |
 |---|---|---|---|
 | 17 | Búsqueda y filtro de emisoras | Buscar por nombre, filtrar por online/offline | ✅ |
-| 18 | Modo oscuro | Toggle light/dark además de los 8 colores de tema actuales | [ ] |
-| 21 | Sleep timer | Apagar reproducción tras N minutos seleccionables | [ ] |
+| 18 | Modo oscuro | Toggle light/dark además de los 8 colores de tema actuales | ✅ |
+| 21 | Sleep timer | Apagar reproducción tras N minutos seleccionables | ✅ |
 | 22 | Parallelizar health checks | Hoy son secuenciales (await en loop); usar `Future.wait()` | [ ] |
 
 ---
