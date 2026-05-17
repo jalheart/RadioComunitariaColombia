@@ -64,11 +64,11 @@ Priorización basada en análisis del codebase (mayo 2026).
   - Archivo: `test/infrastructure/repositories/radio_station_repository_impl_test.dart`
   - Detalle: 9 tests con mocktail que cubren getRadioStations (caché válida, vacía, inválida), refreshRadioStations, getStationMetadata y clearCache
 
-- [ ] **#14**: Tests para `FavoritesNotifier`, `ThemeNotifier`, `SettingsService`
-  - Archivos: `test/application/services/`
+- ✅ **#14**: Tests para `FavoritesNotifier`, `ThemeNotifier`, `SettingsService`, `FavoritesService`
+  - Archivos: `test/application/services/favorites_notifier_test.dart` (7 tests), `test/application/services/theme_notifier_test.dart` (4 tests), `test/infrastructure/services/settings_service_test.dart` (4 tests), `test/infrastructure/services/favorites_service_test.dart` (14 tests)
 
-- [ ] **#15**: Widget tests para pages y `MiniPlayer`
-  - Archivo: `test/presentation/`
+- ✅ **#15**: Widget tests para pages y widgets
+  - Archivos: `test/presentation/pages/settings_page_test.dart` (6 tests), `test/presentation/widgets/mini_player_test.dart` (8 tests), `test/presentation/widgets/station_logo_test.dart` (8 tests)
 
 - ✅ **#16**: Completar tests existentes
   - `test/domain/entities/radio_station_test.dart`: tests de `streamUrl` e `infoUrl` OK
