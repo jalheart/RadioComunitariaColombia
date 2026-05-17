@@ -6,6 +6,7 @@ import '../../application/services/audio_player_service.dart';
 import '../../application/services/favorites_notifier.dart';
 import '../../application/services/station_metadata_notifier.dart';
 import '../../domain/entities/radio_station.dart';
+import '../widgets/station_logo.dart';
 
 class PlayerPage extends StatefulWidget {
   final RadioStation station;
@@ -127,51 +128,18 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
 
     final isOnline = metadata != null && metadata.isOnline;
 
-    return Stack(
-      children: [
-        Container(
-          width: 150,
-          height: 150,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: logo == null || logo.isEmpty
-                ? Container(
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.radio, size: 100, color: Colors.grey),
-                  )
-                : Image.network(
-                    logo,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.radio, size: 100, color: Colors.grey),
-                    ),
-                  ),
-          ),
+    return StationLogo(
+      imageUrl: logo,
+      size: 150,
+      borderRadius: 20,
+      showStatus: !notifier.isLoading,
+      isOnline: isOnline,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.2),
+          blurRadius: 20,
+          offset: const Offset(0, 10),
         ),
-        if (!notifier.isLoading)
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Container(
-              width: 16,
-              height: 16,
-              decoration: BoxDecoration(
-                color: isOnline ? Colors.green : Colors.red,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
       ],
     );
   }

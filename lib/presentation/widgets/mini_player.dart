@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../application/services/audio_player_service.dart';
+import 'station_logo.dart';
 
 class MiniPlayer extends StatelessWidget {
   final AudioPlayerService audioService;
@@ -38,19 +39,7 @@ class MiniPlayer extends StatelessWidget {
             SizedBox(
               width: 70,
               height: 70,
-              child: station.logo == null || station.logo!.isEmpty
-                  ? Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.radio, size: 30),
-                    )
-                  : Image.network(
-                      station.logo!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.radio, size: 30),
-                      ),
-                    ),
+              child: StationLogo(imageUrl: station.logo, size: 70, borderRadius: 0),
             ),
             const SizedBox(width: 12),
             Expanded(

@@ -44,7 +44,7 @@ Priorización basada en análisis del codebase (mayo 2026).
 - ✅ **#8**: Agregar `refreshRadioStations()` y `clearCache()` a la interfaz `RadioStationRepository`
   - Ya existen en la impl (`radio_station_repository_impl.dart`) pero no están declarados en el contrato abstracto (`domain/repositories/radio_station_repository.dart`)
 
-- [ ] **#9**: Extraer widget compartido `StationLogo`
+- ✅ **#9**: Extraer widget compartido `StationLogo`
   - Lógica de logo duplicada en: `main.dart`, `player_page.dart`, `mini_player.dart`
 
 - [ ] **#10**: Limpiar dependencias muertas en `pubspec.yaml`

@@ -12,6 +12,7 @@ import '../../application/services/theme_notifier.dart';
 import 'player_page.dart';
 import 'settings_page.dart';
 import '../widgets/mini_player.dart';
+import '../widgets/station_logo.dart';
 
 class RadioStationListPage extends StatefulWidget {
   const RadioStationListPage({super.key});
@@ -119,23 +120,6 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
             themeNotifier.setThemeColor(color);
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildLogo(String? logo) {
-    if (logo == null || logo.isEmpty) {
-      return const Icon(Icons.radio, size: 40);
-    }
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.network(
-        logo,
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.radio, size: 40),
       ),
     );
   }
@@ -256,7 +240,7 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _buildLogo(logoUrl),
+                  StationLogo(imageUrl: logoUrl, size: 40, borderRadius: 8),
                 ],
               ),
               title: Text(station.name),
