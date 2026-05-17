@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
           }
 
           return MaterialApp(
-            title: 'Radio Comunitaria de Colombia',
+            title: 'Radio Comunitaria de Colombia - Hub de emisoras educativas',
             theme: themeNotifier.theme,
             home: const RadioStationListPage(),
           );

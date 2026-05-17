@@ -156,7 +156,19 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Radio Comunitaria de Colombia'),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipOval(
+            child: Image.asset('assets/icons/logo_rcc.png'),
+          ),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Radio Comunitaria de Colombia', style: TextStyle(fontSize: 16)),
+            Text('Hub de emisoras educativas', style: TextStyle(fontSize: 12)),
+          ],
+        ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           PopupMenuButton<String>(
