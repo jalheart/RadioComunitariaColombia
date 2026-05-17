@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class StationLogo extends StatelessWidget {
   final String? imageUrl;
@@ -31,12 +32,20 @@ class StationLogo extends StatelessWidget {
             color: bgColor,
             child: Icon(Icons.radio, size: size * 0.6, color: Colors.grey),
           )
-        : Image.network(
-            imageUrl!,
+        : CachedNetworkImage(
+            imageUrl: imageUrl!,
             width: size,
             height: size,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
+            placeholder: (context, url) => Container(
+              color: bgColor,
+              child: SizedBox(
+                width: size * 0.3,
+                height: size * 0.3,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            errorWidget: (context, url, error) => Container(
               color: bgColor,
               child: Icon(Icons.radio, size: size * 0.6, color: Colors.grey),
             ),
