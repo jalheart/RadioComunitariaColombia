@@ -59,4 +59,9 @@ class RadioStation {
     final host = Uri.parse(ApiConstants.server).host;
     return 'http://$host:$port/stream';
   }
+
+  String? get infoUrl {
+    if (port == null || port!.isEmpty) return null;
+    return '${ApiConstants.radioInfoEndpoint}$port';
+  }
 }

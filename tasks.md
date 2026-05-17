@@ -38,7 +38,7 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
 
 ### Fase 1 — Domain Layer
 
-- [ ] **1.1**: Crear entidad `StationMetadata` en `lib/domain/entities/station_metadata.dart`
+- [x] **1.1**: Crear entidad `StationMetadata` en `lib/domain/entities/station_metadata.dart`
   - Atributos: `history` (`List<String>`), `title` (`String?`), `art` (`String?`), `ulisteners` (`int`), `listeners` (`int`), `bitrate` (`int`)
   - Método `bool get isOnline` que implemente las reglas de negocio:
     - `history` no es null y no está vacío
@@ -46,7 +46,7 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
   - Factory `StationMetadata.fromJson(Map<String, dynamic> json)` para parsear la respuesta
   - Implementar `==`, `hashCode`, `toString`, `copyWith`
 
-- [ ] **1.2**: Agregar método `get infoUrl` a `RadioStation` en `lib/domain/entities/radio_station.dart`
+- [x] **1.2**: Agregar método `get infoUrl` a `RadioStation` en `lib/domain/entities/radio_station.dart`
   - Retorna `$radioInfoEndpoint$port` si `port` no es null
   - Retorna `null` si no hay port
 
