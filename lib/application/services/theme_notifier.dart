@@ -3,19 +3,25 @@ import '../../infrastructure/services/settings_service.dart';
 import '../ports/settings_port.dart';
 
 class ThemeNotifier extends ChangeNotifier {
-  final SettingsService _settingsService = SettingsService();
+  final SettingsService _settingsService;
+
+  ThemeNotifier({SettingsService? settingsService})
+      : _settingsService = settingsService ?? SettingsService() {
+    _loadTheme();
+  }
+
   int _themeColor = SettingsPort.getDefaultColor();
   bool _isLoading = true;
 
   int get themeColor => _themeColor;
   bool get isLoading => _isLoading;
 
-  ThemeNotifier() {
-    _loadTheme();
-  }
-
   Future<void> _loadTheme() async {
-    _themeColor = await _settingsService.getThemeColor();
+    try {
+      _themeColor = await _settingsService.getThemeColor();
+    } catch (_) {
+      _themeColor = SettingsPort.getDefaultColor();
+    }
     _isLoading = false;
     notifyListeners();
   }

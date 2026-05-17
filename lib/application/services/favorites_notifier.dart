@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import '../../infrastructure/services/favorites_service.dart';
 
 class FavoritesNotifier extends ChangeNotifier {
-  final FavoritesService _favoritesService = FavoritesService();
+  final FavoritesService _favoritesService;
+
+  FavoritesNotifier({FavoritesService? favoritesService})
+      : _favoritesService = favoritesService ?? FavoritesService() {
+    _loadFavorites();
+  }
+
   List<String> _favorites = [];
   bool _isLoading = true;
 
   List<String> get favorites => _favorites;
   bool get isLoading => _isLoading;
-
-  FavoritesNotifier() {
-    _loadFavorites();
-  }
 
   Future<void> _loadFavorites() async {
     try {

@@ -5,7 +5,10 @@ import 'package:just_audio/just_audio.dart';
 import '../../domain/entities/radio_station.dart';
 
 class AudioPlayerService extends ChangeNotifier {
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer;
+
+  AudioPlayerService({AudioPlayer? audioPlayer})
+      : _audioPlayer = audioPlayer ?? AudioPlayer();
   StreamSubscription? _playerStateSubscription;
   RadioStation? _currentStation;
   bool _isPlaying = false;

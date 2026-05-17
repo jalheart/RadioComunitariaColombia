@@ -52,14 +52,17 @@ Priorización basada en análisis del codebase (mayo 2026).
 
 ### Fase 2 — Testing
 
-- [ ] **#11**: Tests para `AudioPlayerService`
+- ✅ **#11**: Tests para `AudioPlayerService`
   - Archivo: `test/application/services/audio_player_service_test.dart`
+  - Detalle: 24 tests que cubren estado inicial, play (nueva estación, misma estación, minimizado, pausado, cambio, error), pause, resume, togglePlayPause, stop, minimize, restore, dispose y stream de estado
 
-- [ ] **#12**: Tests para `RadioStationLocalDataSource`
+- ✅ **#12**: Tests para `RadioStationLocalDataSource`
   - Archivo: `test/infrastructure/datasources/radio_station_local_datasource_test.dart`
+  - Detalle: 14 tests con Hive real (temp dir) que cubren CRUD, caché y limpieza
 
-- [ ] **#13**: Tests para `RadioStationRepositoryImpl`
+- ✅ **#13**: Tests para `RadioStationRepositoryImpl`
   - Archivo: `test/infrastructure/repositories/radio_station_repository_impl_test.dart`
+  - Detalle: 9 tests con mocktail que cubren getRadioStations (caché válida, vacía, inválida), refreshRadioStations, getStationMetadata y clearCache
 
 - [ ] **#14**: Tests para `FavoritesNotifier`, `ThemeNotifier`, `SettingsService`
   - Archivos: `test/application/services/`

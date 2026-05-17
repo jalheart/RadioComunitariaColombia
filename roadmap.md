@@ -32,9 +32,9 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 
 | # | Tarea | Archivo de test | Estado |
 |---|---|---|---|
-| 11 | Tests para `AudioPlayerService` | `test/application/services/audio_player_service_test.dart` | [ ] |
-| 12 | Tests para `RadioStationLocalDataSource` | `test/infrastructure/datasources/radio_station_local_datasource_test.dart` | [ ] |
-| 13 | Tests para `RadioStationRepositoryImpl` | `test/infrastructure/repositories/radio_station_repository_impl_test.dart` | [ ] |
+| 11 | Tests para `AudioPlayerService` | `test/application/services/audio_player_service_test.dart` | ✅ |
+| 12 | Tests para `RadioStationLocalDataSource` | `test/infrastructure/datasources/radio_station_local_datasource_test.dart` | ✅ |
+| 13 | Tests para `RadioStationRepositoryImpl` | `test/infrastructure/repositories/radio_station_repository_impl_test.dart` | ✅ |
 | 14 | Tests para FavoritesService, FavoritesNotifier, ThemeNotifier, SettingsService | `test/application/services/` | [ ] |
 | 15 | Widget tests para pages y mini_player | `test/presentation/` | [ ] |
 | 16 | Completar tests existentes — `streamUrl` getter, errores de red, JSON malformado | `test/domain/entities/radio_station_test.dart`, `test/infrastructure/datasources/radio_station_remote_datasource_test.dart` | ✅ |
