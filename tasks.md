@@ -47,7 +47,7 @@ Priorización basada en análisis del codebase (mayo 2026).
 - ✅ **#9**: Extraer widget compartido `StationLogo`
   - Lógica de logo duplicada en: `main.dart`, `player_page.dart`, `mini_player.dart`
 
-- [ ] **#10**: Limpiar dependencias muertas en `pubspec.yaml`
+- ✅ **#10**: Limpiar dependencias muertas en `pubspec.yaml`
   - Candidatos: `cupertino_icons`, `audio_session`, `shared_preferences` (declaradas pero nunca importadas)
 
 ### Fase 2 — Testing

@@ -24,7 +24,7 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 | 7 | Mover `FavoritesService` y `SettingsService` a `infrastructure/` | Violación hexagonal: usan Hive (externa) pero viven en `application/` | ✅ |
 | 8 | Agregar `refreshRadioStations()` y `clearCache()` a la interfaz `RadioStationRepository` | `domain/repositories/radio_station_repository.dart` | ✅ |
 | 9 | Extraer widget compartido `StationLogo` | Lógica de logo duplicada en `main.dart`, `player_page.dart` y `mini_player.dart` | ✅ |
-| 10 | Limpiar dependencias muertas | `shared_preferences`, `audio_session`, `cupertino_icons` declaradas pero nunca importadas | [ ] |
+| 10 | Limpiar dependencias muertas | `shared_preferences`, `audio_session`, `cupertino_icons` declaradas pero nunca importadas | ✅ |
 
 ---
 
