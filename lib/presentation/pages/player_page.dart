@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../application/services/audio_player_service.dart';
 import '../../application/services/favorites_notifier.dart';
+import '../../application/services/station_metadata_notifier.dart';
 import '../../domain/entities/radio_station.dart';
-import '../../domain/entities/station_metadata.dart';
-import '../../infrastructure/datasources/station_metadata_remote_datasource.dart';
 
 class PlayerPage extends StatefulWidget {
   final RadioStation station;
@@ -28,8 +27,6 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   late final AnimationController _spectrumController;
   final List<double> _spectrumData = List.filled(20, 0.1);
   Timer? _spectrumTimer;
-  StationMetadata? _metadata;
-  bool _metadataLoading = false;
 
   @override
   void initState() {
@@ -46,24 +43,10 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           _startSpectrumSimulation();
         }
       });
-      _loadMetadata();
+      if (widget.station.port != null && widget.station.port!.isNotEmpty) {
+        context.read<StationMetadataNotifier>().fetchMetadata(widget.station.port!);
+      }
     });
-  }
-
-  Future<void> _loadMetadata() async {
-    if (widget.station.port == null || widget.station.port!.isEmpty) return;
-
-    setState(() => _metadataLoading = true);
-
-    final dataSource = StationMetadataRemoteDataSource();
-    final metadata = await dataSource.fetchMetadata(widget.station.port!);
-
-    if (mounted) {
-      setState(() {
-        _metadata = metadata;
-        _metadataLoading = false;
-      });
-    }
   }
 
   @override
@@ -136,10 +119,13 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   }
 
   Widget _buildLogo() {
-    final art = _metadata?.art;
+    final notifier = context.watch<StationMetadataNotifier>();
+    final metadata = notifier.metadata;
+
+    final art = metadata?.art;
     final logo = (art != null && art.isNotEmpty) ? art : widget.station.logo;
 
-    final isOnline = _metadata != null && _metadata!.isOnline;
+    final isOnline = metadata != null && metadata.isOnline;
 
     return Stack(
       children: [
@@ -173,7 +159,7 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                   ),
           ),
         ),
-        if (!_metadataLoading)
+        if (!notifier.isLoading)
           Positioned(
             top: 8,
             right: 8,
@@ -191,6 +177,9 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   }
 
   Widget _buildStationInfo() {
+    final notifier = context.watch<StationMetadataNotifier>();
+    final metadata = notifier.metadata;
+
     return Column(
       children: [
         Text(
@@ -210,10 +199,10 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
             textAlign: TextAlign.center,
           ),
         ],
-        if (_metadata != null && _metadata!.title != null && _metadata!.title!.isNotEmpty) ...[
+        if (metadata != null && metadata.title != null && metadata.title!.isNotEmpty) ...[
           const SizedBox(height: 8),
           Text(
-            _metadata!.title!,
+            metadata.title!,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w600,
@@ -223,24 +212,24 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
             overflow: TextOverflow.ellipsis,
           ),
         ],
-        if (_metadata != null) ...[
+        if (metadata != null) ...[
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildMetadataChip(
                 Icons.headphones,
-                '${_metadata!.listeners}',
+                '${metadata.listeners}',
               ),
               const SizedBox(width: 16),
               _buildMetadataChip(
                 Icons.speed,
-                '${_metadata!.bitrate} kbps',
+                '${metadata.bitrate} kbps',
               ),
             ],
           ),
         ],
-        if (_metadataLoading) ...[
+        if (notifier.isLoading) ...[
           const SizedBox(height: 12),
           const SizedBox(
             width: 20,

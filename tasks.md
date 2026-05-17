@@ -123,10 +123,10 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
 
 ### Fase 7 — Integración y Verificación
 
-- [ ] **7.1**: Conectar `StationMetadataNotifier` en el árbol de providers de `main.dart`
+- [x] **7.1**: Conectar `StationMetadataNotifier` en el árbol de providers de `main.dart`
   - Registrar en `MultiProvider`
 
-- [ ] **7.2**: Verificar que al abrir una emisora en `PlayerPage` se dispare la carga de metadata
+- [x] **7.2**: Verificar que al abrir una emisora en `PlayerPage` se dispare la carga de metadata
   - La metadata debe cargarse tan pronto como se entra a la página
 
 - [ ] **7.3**: Verificar que la lista de emisoras muestre online/offline basado en metadata
