@@ -13,6 +13,14 @@ class SettingsService {
     'red': 0xFFF44336,
     'pink': 0xFFE91E63,
     'purple': 0xFF9C27B0,
+    'darkBlue': 0xFF0D47A1,
+    'darkGreen': 0xFF1B5E20,
+    'darkRed': 0xFFB71C1C,
+    'darkPurple': 0xFF4A148C,
+    'darkTeal': 0xFF004D40,
+    'darkOrange': 0xFFE65100,
+    'charcoal': 0xFF37474F,
+    'midnight': 0xFF1A237E,
   };
 
   static List<String> get availableThemes => _themeColors.keys.toList();

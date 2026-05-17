@@ -201,15 +201,13 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
         ],
         if (metadata != null && metadata.title != null && metadata.title!.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(
-            metadata.title!,
+          _MarqueeText(
+            key: ValueKey(metadata.title),
+            text: metadata.title!,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w600,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
         if (metadata != null) ...[
@@ -305,6 +303,12 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   }
 
   Widget _buildControls() {
+    final notifier = context.watch<StationMetadataNotifier>();
+    final metadata = notifier.metadata;
+    final isOnline = metadata != null && metadata.isOnline;
+
+    if (!isOnline) return const SizedBox.shrink();
+
     return Consumer<AudioPlayerService>(
       builder: (context, audioService, _) {
         final isPlaying = audioService.isPlaying;
@@ -359,6 +363,59 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           ],
         );
       },
+    );
+  }
+}
+
+class _MarqueeText extends StatefulWidget {
+  final String text;
+  final TextStyle? style;
+
+  const _MarqueeText({super.key, required this.text, this.style});
+
+  @override
+  State<_MarqueeText> createState() => _MarqueeTextState();
+}
+
+class _MarqueeTextState extends State<_MarqueeText> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startScroll());
+  }
+
+  void _startScroll() {
+    if (!mounted || !_controller.hasClients) return;
+    final maxScroll = _controller.position.maxScrollExtent;
+    if (maxScroll <= 0) return;
+
+    _controller
+        .animateTo(
+      maxScroll,
+      duration: Duration(milliseconds: (maxScroll * 30).toInt().clamp(1000, 15000)),
+      curve: Curves.linear,
+    )
+        .then((_) {
+      if (!mounted) return;
+      _controller.jumpTo(0);
+      _startScroll();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      controller: _controller,
+      scrollDirection: Axis.horizontal,
+      child: Text(widget.text, style: widget.style, softWrap: false),
     );
   }
 }

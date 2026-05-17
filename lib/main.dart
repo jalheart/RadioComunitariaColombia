@@ -244,9 +244,12 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
         ],
       ),
       body: _buildBody(),
-      bottomNavigationBar: Consumer<AudioPlayerService>(
-        builder: (context, audioService, _) {
+      bottomNavigationBar: Consumer2<AudioPlayerService, AllStationsMetadataNotifier>(
+        builder: (context, audioService, metadataNotifier, _) {
           if (!audioService.hasStation) return const SizedBox.shrink();
+          final station = audioService.currentStation!;
+          final isOnline = metadataNotifier.isOnline(station.name);
+          if (isOnline != true) return const SizedBox.shrink();
           return MiniPlayer(
             audioService: audioService,
             onTap: () => _openPlayer(audioService.currentStation!),
@@ -332,7 +335,10 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
                   const Icon(Icons.play_arrow),
                 ],
               ),
-              onTap: () => _openPlayer(station),
+              onTap: () {
+                final online = metadataNotifier.isOnline(station.name);
+                if (online == true) _openPlayer(station);
+              },
             );
           },
         );
