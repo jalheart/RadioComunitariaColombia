@@ -29,7 +29,7 @@ Priorización basada en análisis del codebase (mayo 2026).
 - ✅ **#4**: Extraer `RadioStationListPage` de `main.dart` a `presentation/pages/radio_station_list_page.dart`
   - Archivos: `lib/main.dart` → `lib/presentation/pages/radio_station_list_page.dart`
 
-- [ ] **#5**: Crear casos de uso faltantes en `application/usecases/`
+- ✅ **#5**: Crear casos de uso faltantes en `application/usecases/`
   - Pendientes: `GetRadioStationsUseCase`, `ToggleFavoriteUseCase`
   - Existe: `GetStationMetadataUseCase`
 
