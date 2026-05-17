@@ -17,7 +17,7 @@ Priorización basada en análisis del codebase (mayo 2026).
   - Archivo: `lib/infrastructure/datasources/radio_station_remote_datasource.dart:24`
   - Tests: `test/infrastructure/datasources/radio_station_remote_datasource_test.dart:116-140` (2 tests agregados)
 
-- [ ] **#2**: Corregir `play()` / `resume()` en `AudioPlayerService`
+- ✅ **#2**: Corregir `play()` / `resume()` en `AudioPlayerService`
   - Detalle: Los `.then()` callbacks setean `_isPlaying = false` después de un play exitoso
   - Archivo: `lib/application/services/audio_player_service.dart`
 

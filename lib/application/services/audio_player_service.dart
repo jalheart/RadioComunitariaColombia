@@ -31,12 +31,7 @@ class AudioPlayerService extends ChangeNotifier {
         _isMinimized = false;
       }
       if (!_isPlaying) {
-        unawaited(_audioPlayer.play().then((_) {
-          if (_currentStation != null) {
-            _isPlaying = false;
-            notifyListeners();
-          }
-        }));
+        unawaited(_audioPlayer.play());
         _isPlaying = true;
       }
       notifyListeners();
@@ -57,12 +52,8 @@ class AudioPlayerService extends ChangeNotifier {
     try {
       final streamUrl = station.streamUrl;
       await _audioPlayer.setUrl(streamUrl);
-      unawaited(_audioPlayer.play().then((_) {
-        if (_currentStation != null) {
-          _isPlaying = false;
-          notifyListeners();
-        }
-      }));
+      unawaited(_audioPlayer.play());
+
       _isPlaying = true;
     } catch (e) {
       _error = 'Parece que estás offline';
@@ -90,12 +81,7 @@ class AudioPlayerService extends ChangeNotifier {
   }
 
   Future<void> resume() async {
-    unawaited(_audioPlayer.play().then((_) {
-      if (_currentStation != null) {
-        _isPlaying = false;
-        notifyListeners();
-      }
-    }));
+    unawaited(_audioPlayer.play());
     _isPlaying = true;
     notifyListeners();
   }

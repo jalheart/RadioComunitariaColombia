@@ -22,6 +22,7 @@ Flutter app para gestionar y reproducir estaciones de radio comunitarias de Colo
 - Marcar el progreso usando `✅` para tareas completadas y `[ ]` para pendientes
 - El archivo `tasks.md` sirve como guía única de referencia; debe mantenerse actualizado durante toda la sesión
 - Al finalizar la sesión o el feature, dejar `tasks.md` en el último estado para trazabilidad
+- Cada vez que se actualice `tasks.md`, DEBES verificar y actualizar `roadmap.md` si refleja alguna de las tareas modificadas. Ambos archivos deben mantenerse sincronizados.
 
 ## Reglas para Agregar Dependencias
 

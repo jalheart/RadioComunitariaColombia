@@ -9,7 +9,7 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 | # | Tarea | Archivos afectados | Razón | Estado |
 |---|---|---|---|---|
 | 1 | Arreglar `streamUrl` + `_extractPort` | `infrastructure/datasources/radio_station_remote_datasource.dart` | `fetchRadioStations()` prioriza `json['port']` (int → String con `?.toString()`) sobre `_extractPort(url)` | ✅ |
-| 2 | Corregir `play()` / `resume()` en AudioPlayerService | `application/services/audio_player_service.dart` | Los callbacks `.then()` setean `_isPlaying = false` después de un play exitoso | [ ] |
+| 2 | Corregir `play()` / `resume()` en AudioPlayerService | `application/services/audio_player_service.dart` | Los callbacks `.then()` setean `_isPlaying = false` después de un play exitoso | ✅ |
 | 3 | Agregar `_audioPlayer.dispose()` | `application/services/audio_player_service.dart` | Fuga de memoria — el `AudioPlayer` nunca se libera | ✅ |
 
 ---
