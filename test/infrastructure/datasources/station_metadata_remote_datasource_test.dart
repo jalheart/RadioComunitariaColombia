@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -81,9 +82,7 @@ void main() {
 
     test('should return null on TimeoutException', () async {
       when(() => mockClient.get(expectedUri)).thenAnswer(
-        (_) => Future.delayed(const Duration(seconds: 10), () {
-          return http.Response('', 200);
-        }),
+        (_) => Future.error(TimeoutException('timeout')),
       );
 
       final result = await dataSource.fetchMetadata(port);

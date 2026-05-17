@@ -15,7 +15,12 @@ import '../widgets/mini_player.dart';
 import '../widgets/station_logo.dart';
 
 class RadioStationListPage extends StatefulWidget {
-  const RadioStationListPage({super.key});
+  const RadioStationListPage({
+    super.key,
+    RadioStationRepositoryImpl? repository,
+  }) : _repository = repository;
+
+  final RadioStationRepositoryImpl? _repository;
 
   @override
   State<RadioStationListPage> createState() => _RadioStationListPageState();
@@ -26,16 +31,26 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
   List<RadioStation> _stations = [];
   bool _isLoading = true;
   String? _error;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _filterOnlineOnly = false;
 
   @override
   void initState() {
     super.initState();
-    _repository = RadioStationRepositoryImpl(
-      remoteDataSource: RadioStationRemoteDataSource(),
-      localDataSource: RadioStationLocalDataSource(),
-      metadataDataSource: StationMetadataRemoteDataSource(),
-    );
+    _repository = widget._repository ??
+        RadioStationRepositoryImpl(
+          remoteDataSource: RadioStationRemoteDataSource(),
+          localDataSource: RadioStationLocalDataSource(),
+          metadataDataSource: StationMetadataRemoteDataSource(),
+        );
     _loadStations();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadStations() async {
@@ -209,65 +224,134 @@ class _RadioStationListPageState extends State<RadioStationListPage> {
       return const Center(child: Text('No hay estaciones disponibles'));
     }
 
-    return Consumer<FavoritesNotifier>(
-      builder: (context, favoritesNotifier, _) {
-        final favorites = _stations.where((s) => favoritesNotifier.isFavorite(s.name)).toList()
-          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-        final nonFavorites = _stations.where((s) => !favoritesNotifier.isFavorite(s.name)).toList()
-          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-        final sortedStations = [...favorites, ...nonFavorites];
-
-        return ListView.builder(
-          itemCount: sortedStations.length,
-          itemBuilder: (context, index) {
-            final station = sortedStations[index];
-            final isFavorite = favoritesNotifier.isFavorite(station.name);
-            final metadataNotifier = context.watch<AllStationsMetadataNotifier>();
-            final statusColor = metadataNotifier.getStatusColor(station.name);
-            final metadata = metadataNotifier.getMetadata(station.name);
-            final logoUrl = (metadata?.art != null && metadata!.art!.isNotEmpty) ? metadata.art : station.logo;
-
-            return ListTile(
-              leading: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 4,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: statusColor,
-                      borderRadius: BorderRadius.circular(2),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Buscar emisora...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                    isDense: true,
                   ),
-                  const SizedBox(width: 8),
-                  StationLogo(imageUrl: logoUrl, size: 40, borderRadius: 8),
-                ],
+                  onChanged: (value) => setState(() => _searchQuery = value),
+                ),
               ),
-              title: Text(station.name),
-              subtitle: Text(station.slogan ?? station.url),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : null,
+              const SizedBox(width: 4),
+              Tooltip(
+                message: 'Solo online',
+                child: Switch(
+                  value: _filterOnlineOnly,
+                  thumbIcon: WidgetStatePropertyAll(
+                    Icon(_filterOnlineOnly ? Icons.signal_wifi_4_bar : Icons.signal_wifi_off, size: 16),
+                  ),
+                  onChanged: (value) => setState(() => _filterOnlineOnly = value),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Consumer<FavoritesNotifier>(
+            builder: (context, favoritesNotifier, _) {
+              final metadataNotifier = context.watch<AllStationsMetadataNotifier>();
+
+              final filtered = _stations.where((s) {
+                if (_searchQuery.isNotEmpty) {
+                  final q = _searchQuery.toLowerCase();
+                  if (!s.name.toLowerCase().contains(q) &&
+                      !(s.slogan?.toLowerCase().contains(q) ?? false)) {
+                    return false;
+                  }
+                }
+                if (_filterOnlineOnly) {
+                  if (metadataNotifier.isOnline(s.name) != true) return false;
+                }
+                return true;
+              }).toList();
+
+              final favorites = filtered.where((s) => favoritesNotifier.isFavorite(s.name)).toList()
+                ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+              final nonFavorites = filtered.where((s) => !favoritesNotifier.isFavorite(s.name)).toList()
+                ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+              final sortedStations = [...favorites, ...nonFavorites];
+
+              if (sortedStations.isEmpty) {
+                return const Center(child: Text('No se encontraron emisoras'));
+              }
+
+              return ListView.builder(
+                itemCount: sortedStations.length,
+                itemBuilder: (context, index) {
+                  final station = sortedStations[index];
+                  final isFavorite = favoritesNotifier.isFavorite(station.name);
+                  final statusColor = metadataNotifier.getStatusColor(station.name);
+                  final metadata = metadataNotifier.getMetadata(station.name);
+                  final logoUrl = (metadata?.art != null && metadata!.art!.isNotEmpty) ? metadata.art : station.logo;
+
+                  return ListTile(
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: statusColor,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        StationLogo(imageUrl: logoUrl, size: 40, borderRadius: 8),
+                      ],
                     ),
-                    onPressed: () {
-                      favoritesNotifier.toggleFavorite(station.name);
+                    title: Text(station.name),
+                    subtitle: Text(station.slogan ?? station.url),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : null,
+                          ),
+                          onPressed: () {
+                            favoritesNotifier.toggleFavorite(station.name);
+                          },
+                        ),
+                        const Icon(Icons.play_arrow),
+                      ],
+                    ),
+                    onTap: () {
+                      final online = metadataNotifier.isOnline(station.name);
+                      if (online == true) _openPlayer(station);
                     },
-                  ),
-                  const Icon(Icons.play_arrow),
-                ],
-              ),
-              onTap: () {
-                final online = metadataNotifier.isOnline(station.name);
-                if (online == true) _openPlayer(station);
-              },
-            );
-          },
-        );
-      },
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

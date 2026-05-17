@@ -77,20 +77,81 @@ Priorización basada en análisis del codebase (mayo 2026).
 
 ### Fase 3 — Funcionalidades para el usuario
 
-- [ ] **#17**: Búsqueda y filtro de emisoras (nombre, online/offline)
+- [ ] **#17**: Búsqueda y filtro de emisoras
+  - ✅ **17.1**: Agregar `SearchController` / `SearchBar` widget en `RadioStationListPage` (filtro por nombre o slogan)
+  - ✅ **17.2**: Agregar `FilterChip` o toggle para filtrar solo emisoras online/offline
+  - ✅ **17.3**: Implementar lógica de búsqueda en `RadioStationListPage` (estado local o notifier) que filtre la lista en tiempo real
+  - [ ] **17.4**: Actualizar tests de `radio_station_list_page_test.dart` para cubrir búsqueda y filtro
+
 - [ ] **#18**: Modo oscuro (toggle light/dark además de colores de tema)
+  - **18.1**: Agregar `brightness` (light/dark) al `SettingsPort` y `SettingsService` (persistir en Hive)
+  - **18.2**: Ampliar `ThemeNotifier` para exponer y cambiar `brightness` (`Brightness.light` / `Brightness.dark`)
+  - **18.3**: Agregar `SwitchListTile` de modo oscuro en `SettingsPage`
+  - **18.4**: Actualizar tests de `ThemeNotifier` y `SettingsService`
+
 - [ ] **#19**: Categorías / géneros para agrupar emisoras
+  - **19.1**: Agregar campo `category` (String?) a la entidad `RadioStation` (dominio)
+  - **19.2**: Parsear `category` desde el JSON en `RadioStationRemoteDataSource`
+  - **19.3**: Agregar secciones agrupadas por categoría en la lista (`SliverList` con sticky headers o `ListView` con separadores)
+  - **19.4**: Agregar filtro por categoría (dropdown o chips)
+  - **19.5**: Actualizar tests de entidad, datasource remoto y página
+
 - [ ] **#20**: Control de volumen (slider en player page)
+  - **20.1**: Agregar `setVolume(double volume)` y `getVolume()` al `AudioPort`
+  - **20.2**: Implementar `setVolume`/`getVolume` en `AudioPlayerService` (delegar a `_audioPlayer.setVolume()` / `_audioPlayer.volume`)
+  - **20.3**: Agregar `Slider` de volumen en `PlayerPage` (vertical u horizontal, junto a controles)
+  - **20.4**: Persistir nivel de volumen en `SettingsService`
+  - **20.5**: Actualizar tests de `AudioPlayerService` y `PlayerPage`
+
 - [ ] **#21**: Sleep timer (apagar tras N minutos)
+  - **21.1**: Crear `SleepTimerService` en `application/services/` con timer countdown y estado
+  - **21.2**: Exponer estado del timer (tiempo restante, activo/inactivo) vía `ChangeNotifier` (+ provider)
+  - **21.3**: Agregar UI en `PlayerPage` o bottom sheet para seleccionar minutos (15, 30, 45, 60, custom)
+  - **21.4**: Al expirar: detener reproducción (llamar `stop()` en `AudioPlayerService`) y mostrar notificación/snackbar
+  - **21.5**: Agregar tests unitarios para `SleepTimerService`
+
 - [ ] **#22**: Parallelizar health checks (hoy secuenciales, usar `Future.wait()`)
+  - **22.1**: Refactorizar `fetchAllMetadata()` en `AllStationsMetadataNotifier` para lanzar todas las llamadas en paralelo con `Future.wait()`
+  - **22.2**: Manejar fallos parciales (cada `Future` atrapa su error, el `Future.wait` no falla por una)
+  - **22.3**: Agregar límite de concurrencia opcional (ej. batches de 10) para no saturar red
+  - **22.4**: Actualizar tests del notifier
 
 ### Fase 4 — Profesionalización
 
 - [ ] **#23**: Audio focus y background playback (notificaciones, reproducción en segundo plano)
+  - **23.1**: Solicitar permiso explícito para dependencia `audio_service: ^0.18.0` o `just_audio_background: ^0.0.1-beta.X`​
+  - **23.2**: Configurar `AudioSession` en Android (foreground service type `mediaPlayback`)
+  - **23.3**: Configurar `UIBackgroundModes` (audio) en iOS `Info.plist`
+  - **23.4**: Integrar `AudioPlayerService` con notificación persistente (título, portada, botones play/pause/stop)
+  - **23.5**: Manejar eventos de audio focus (pausar al recibir llamada, reanudar al colgar)
+  - **23.6**: Tests de integración para background playback
+
 - [ ] **#24**: Controles en lock screen
+  - **24.1**: Configurar `AudioSession` de `just_audio` para que exponga metadatos al sistema operativo (`MediaItem`)
+  - **24.2**: Sincronizar `MediaItem.artist`, `MediaItem.title` y `MediaItem.artUri` con la estación actual
+  - **24.3**: Probar en Android (lock screen controls) y iOS (Control Center)
+
 - [ ] **#25**: Deep linking (compartir enlace directo a emisora)
+  - **25.1**: Solicitar permiso para dependencia `app_links: ^6.0.0` o `go_router: ^14.0.0`​
+  - **25.2**: Definir esquema de URL: `rcc://station/{stationName}` o similar
+  - **25.3**: Configurar `intent-filter` en Android `AndroidManifest.xml` (deep link)
+  - **25.4**: Manejar enlace entrante en `main.dart` (detectar estación por nombre, navegar a `PlayerPage` y reproducir)
+  - **25.5**: Agregar botón "Compartir" en `PlayerPage` que genere el deep link
+
 - [ ] **#26**: Notificaciones push (alertar cuando favorita vuelve online)
+  - **26.1**: Solicitar permiso para dependencias `firebase_messaging: ^15.0.0` y `flutter_local_notifications: ^18.0.0`​
+  - **26.2**: Configurar Firebase Cloud Messaging (google-services.json, Firebase Console)
+  - **26.3**: Implementar `PushNotificationService` que maneje token, recepción y tap de notificaciones
+  - **26.4**: Lógica en backend (o polling local) para detectar cuando una favorita offline vuelve online y disparar notificación
+  - **26.5**: Manejar tap en notificación → abrir `PlayerPage` con esa estación
+
 - [ ] **#27**: Soporte multidioma (español e inglés con i18n)
+  - **27.1**: Agregar dependencias `flutter_localizations` (sdk) e `intl: ^0.19.0`
+  - **27.2**: Crear archivos `.arb` para español (`es.arb`) e inglés (`en.arb`) con todas las cadenas de la app
+  - **27.3**: Configurar `localizationsDelegates`, `supportedLocales` y `locale` en `MaterialApp`
+  - **27.4**: Extraer todos los strings hardcodeados (español) a referencias `AppLocalizations.of(context)!`
+  - **27.5**: Agregar selector de idioma en `SettingsPage`
+  - **27.6**: Persistir preferencia de idioma en `SettingsService`
 
 ---
 
