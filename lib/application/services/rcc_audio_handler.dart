@@ -90,8 +90,8 @@ class RCCAudioHandler extends BaseAudioHandler {
     ));
 
     playbackState.add(playbackState.value.copyWith(
-      playing: true,
-      processingState: AudioProcessingState.ready,
+      playing: false,
+      processingState: AudioProcessingState.loading,
       controls: [
         MediaControl.pause,
         MediaControl.stop,
@@ -100,7 +100,6 @@ class RCCAudioHandler extends BaseAudioHandler {
     ));
 
     await _player.setUrl(streamUrl);
-    _player.play();
   }
 
   @override

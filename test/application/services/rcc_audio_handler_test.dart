@@ -67,19 +67,17 @@ void main() {
   });
 
   group('setStation()', () {
-    test('should set URL and play the station', () async {
+    test('should set URL without playing', () async {
       when(() => mockPlayer.setUrl(any())).thenAnswer((_) async => null);
-      when(() => mockPlayer.play()).thenAnswer((_) async {});
 
       await handler.setStation(station);
 
       verify(() => mockPlayer.setUrl(station.streamUrl)).called(1);
-      verify(() => mockPlayer.play()).called(1);
+      verifyNever(() => mockPlayer.play());
     });
 
     test('should update mediaItem with station metadata', () async {
       when(() => mockPlayer.setUrl(any())).thenAnswer((_) async => null);
-      when(() => mockPlayer.play()).thenAnswer((_) async {});
 
       MediaItem? emitted;
       handler.mediaItem.listen((item) => emitted = item);
@@ -95,7 +93,6 @@ void main() {
 
     test('should use default artist when slogan is null', () async {
       when(() => mockPlayer.setUrl(any())).thenAnswer((_) async => null);
-      when(() => mockPlayer.play()).thenAnswer((_) async {});
 
       final stationNoSlogan = RadioStation(
         name: 'Test Radio',
@@ -112,7 +109,6 @@ void main() {
 
     test('should handle null logo gracefully', () async {
       when(() => mockPlayer.setUrl(any())).thenAnswer((_) async => null);
-      when(() => mockPlayer.play()).thenAnswer((_) async {});
 
       final stationNoLogo = RadioStation(
         name: 'Test Radio',

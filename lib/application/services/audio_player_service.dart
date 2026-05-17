@@ -68,6 +68,7 @@ class AudioPlayerService extends ChangeNotifier {
 
       if (_handler != null) {
         await _handler.setStation(station);
+        unawaited(_handler.play());
       } else {
         await _audioPlayer.setUrl(streamUrl);
         unawaited(_audioPlayer.play());
