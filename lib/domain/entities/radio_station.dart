@@ -57,7 +57,7 @@ class RadioStation {
       return url;
     }
     final host = Uri.parse(ApiConstants.server).host;
-    return 'http://$host:$port/stream';
+    return 'https://$host:$port/stream';
   }
 
   String? get infoUrl {

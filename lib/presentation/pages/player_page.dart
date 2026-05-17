@@ -244,6 +244,22 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
         ],
+        Consumer<AudioPlayerService>(
+          builder: (context, audioService, _) {
+            final error = audioService.error;
+            if (error == null) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                error,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        ),
       ],
     );
   }

@@ -125,7 +125,7 @@ void main() {
 
       expect(
         station.streamUrl,
-        'http://radios.miservidor.cloud:8286/stream',
+        'https://radios.miservidor.cloud:8286/stream',
       );
     });
 
@@ -136,7 +136,7 @@ void main() {
         port: '8080',
       );
 
-      expect(station.streamUrl, 'http://radios.miservidor.cloud:8080/stream');
+      expect(station.streamUrl, 'https://radios.miservidor.cloud:8080/stream');
     });
 
     test('infoUrl should return correct URL when port is set', () {
