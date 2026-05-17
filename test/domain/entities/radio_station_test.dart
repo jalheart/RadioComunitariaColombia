@@ -138,5 +138,37 @@ void main() {
 
       expect(station.streamUrl, 'http://radios.miservidor.cloud:8080/stream');
     });
+
+    test('infoUrl should return correct URL when port is set', () {
+      final station = RadioStation(
+        name: 'Test',
+        url: 'https://example.com/?p=8286',
+        port: '8286',
+      );
+
+      expect(
+        station.infoUrl,
+        'https://radios.miservidor.cloud/cp/get_info.php?p=8286',
+      );
+    });
+
+    test('infoUrl should return null when port is null', () {
+      final station = RadioStation(
+        name: 'Test',
+        url: 'https://example.com/stream',
+      );
+
+      expect(station.infoUrl, isNull);
+    });
+
+    test('infoUrl should return null when port is empty', () {
+      final station = RadioStation(
+        name: 'Test',
+        url: 'https://example.com/stream',
+        port: '',
+      );
+
+      expect(station.infoUrl, isNull);
+    });
   });
 }

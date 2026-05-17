@@ -95,31 +95,31 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
   - Mostrar `bitrate` formateado (ej. "128 kbps")
   - Usar `art` como imagen de fondo/logo si existe, con fallback al `logo` de la emisora
 
-- [ ] **5.2**: Reemplazar el badge de conexión (wifi verde/rojo) con lógica basada en `stationMetadata.isOnline`
+- [x] **5.2**: Reemplazar el badge de conexión (wifi verde/rojo) con lógica basada en `stationMetadata.isOnline`
   - Si `isOnline == false` → mostrar offline indicator
   - Si `isOnline == true` → mostrar online indicator + metadata
 
 ### Fase 6 — Tests
 
-- [ ] **6.1**: Test unitario para `StationMetadata`
+- [x] **6.1**: Test unitario para `StationMetadata`
   - Test: `fromJson` con JSON completo
   - Test: `fromJson` con `history` vacío → `isOnline == false`
   - Test: `fromJson` sin `history` → `isOnline == false`
   - Test: `fromJson` con `title` vacío → `isOnline == false`
   - Test: `fromJson` con datos válidos → `isOnline == true`
 
-- [ ] **6.2**: Test unitario para `StationMetadataRemoteDataSource`
+- [x] **6.2**: Test unitario para `StationMetadataRemoteDataSource`
   - Test: respuesta HTTP 200 con JSON válido → retorna `StationMetadata`
   - Test: respuesta HTTP 200 con JSON inválido → retorna `null`
   - Test: respuesta HTTP 404 → retorna `null`
   - Test: timeout → retorna `null`
   - Test: error de red → retorna `null`
 
-- [ ] **6.3**: Test unitario para `RadioStation.infoUrl`
+- [x] **6.3**: Test unitario para `RadioStation.infoUrl`
   - Test: con port → retorna URL correcta
   - Test: sin port → retorna `null`
 
-- [ ] **6.4**: Test para `GetStationMetadataUseCase`
+- [x] **6.4**: Test para `GetStationMetadataUseCase`
 
 ### Fase 7 — Integración y Verificación
 
