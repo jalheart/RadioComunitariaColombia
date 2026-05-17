@@ -1,3 +1,5 @@
+import 'package:rc/core/constants.dart';
+
 class RadioStation {
   final String name;
   final String url;
@@ -54,7 +56,7 @@ class RadioStation {
     if (port == null || port!.isEmpty) {
       return url;
     }
-    final uri = Uri.parse(url);
-    return '${uri.scheme}://${uri.host}:$port/stream';
+    final host = Uri.parse(ApiConstants.server).host;
+    return 'http://$host:$port/stream';
   }
 }

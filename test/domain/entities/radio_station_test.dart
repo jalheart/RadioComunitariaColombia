@@ -106,5 +106,37 @@ void main() {
         'RadioStation(name: Radio Colombia, url: https://radio.com, port: null, logo: null, slogan: null)',
       );
     });
+
+    test('streamUrl should fallback to url when port is null', () {
+      final station = RadioStation(
+        name: 'Test',
+        url: 'https://example.com/stream',
+      );
+
+      expect(station.streamUrl, 'https://example.com/stream');
+    });
+
+    test('streamUrl should build correct Shoutcast URL when port is set', () {
+      final station = RadioStation(
+        name: 'Test',
+        url: 'https://radios.miservidor.cloud/cp/widgets/player/single/?p=8286',
+        port: '8286',
+      );
+
+      expect(
+        station.streamUrl,
+        'http://radios.miservidor.cloud:8286/stream',
+      );
+    });
+
+    test('streamUrl should use server constant host', () {
+      final station = RadioStation(
+        name: 'Test',
+        url: 'https://server.com/?p=8080',
+        port: '8080',
+      );
+
+      expect(station.streamUrl, 'http://radios.miservidor.cloud:8080/stream');
+    });
   });
 }
