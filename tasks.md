@@ -161,13 +161,6 @@ Priorización basada en análisis del codebase (mayo 2026).
     - iOS: `UIBackgroundModes` con `audio` para playback en segundo plano
     - **Requiere prueba manual**: Ejecutar en dispositivo real/emulador, reproducir emisora, bloquear pantalla y verificar controles en lock screen
 
-- [ ] **#25**: Deep linking (compartir enlace directo a emisora)
-  - **25.1**: Solicitar permiso para dependencia `app_links: ^6.0.0` o `go_router: ^14.0.0`​
-  - **25.2**: Definir esquema de URL: `rcc://station/{stationName}` o similar
-  - **25.3**: Configurar `intent-filter` en Android `AndroidManifest.xml` (deep link)
-  - **25.4**: Manejar enlace entrante en `main.dart` (detectar estación por nombre, navegar a `PlayerPage` y reproducir)
-  - **25.5**: Agregar botón "Compartir" en `PlayerPage` que genere el deep link
-
 - [ ] **#26**: Notificaciones push (alertar cuando favorita vuelve online)
   - **26.1**: Solicitar permiso para dependencias `firebase_messaging: ^15.0.0` y `flutter_local_notifications: ^18.0.0`​
   - **26.2**: Configurar Firebase Cloud Messaging (google-services.json, Firebase Console)
