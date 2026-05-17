@@ -18,7 +18,7 @@ Priorización basada en análisis del códigobase (12 mayo 2026).
 
 | # | Tarea | Archivos afectados | Estado |
 |---|---|---|---|
-| 4 | Extraer `RadioStationListPage` de `main.dart` a `presentation/pages/` | `main.dart` → `presentation/pages/radio_station_list_page.dart` | [ ] |
+| 4 | Extraer `RadioStationListPage` de `main.dart` a `presentation/pages/` | `main.dart` → `presentation/pages/radio_station_list_page.dart` | ✅ |
 | 5 | Crear casos de uso en `application/` (GetRadioStationsUseCase, ToggleFavoriteUseCase, etc.) | `application/usecases/` (nuevo directorio) | [ ] |
 | 6 | Definir puertos en `application/ports/` (interfaces para audio, favoritos, settings) | `application/ports/` (hoy vacío) | [ ] |
 | 7 | Mover `FavoritesService` y `SettingsService` a `infrastructure/` | Violación hexagonal: usan Hive (externa) pero viven en `application/` | [ ] |
