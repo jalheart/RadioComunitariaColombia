@@ -58,9 +58,15 @@ class RCCAudioHandler extends BaseAudioHandler {
   }
 
   void _onPlayerStateChanged(PlayerState state) {
+    final isPlaying = state.playing;
     playbackState.add(playbackState.value.copyWith(
-      playing: state.playing,
+      playing: isPlaying,
       processingState: _mapProcessingState(state.processingState),
+      controls: [
+        if (isPlaying) MediaControl.pause else MediaControl.play,
+        MediaControl.stop,
+      ],
+      androidCompactActionIndices: const [0, 1],
     ));
   }
 
@@ -89,11 +95,11 @@ class RCCAudioHandler extends BaseAudioHandler {
       artUri: station.logo != null ? Uri.tryParse(station.logo!) : null,
     ));
 
-    playbackState.add(playbackState.value.copyWith(
+    playbackState.add(PlaybackState(
       playing: false,
       processingState: AudioProcessingState.loading,
       controls: [
-        MediaControl.pause,
+        MediaControl.play,
         MediaControl.stop,
       ],
       androidCompactActionIndices: const [0, 1],

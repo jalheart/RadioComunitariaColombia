@@ -208,4 +208,74 @@ void main() {
       expect(emitted, isNull);
     });
   });
+
+  group('lock screen controls', () {
+    test('should show play and stop controls when loading station', () async {
+      when(() => mockPlayer.setUrl(any())).thenAnswer((_) async => null);
+
+      PlaybackState? emitted;
+      handler.playbackState.listen((state) => emitted = state);
+
+      await handler.setStation(station);
+
+      expect(emitted, isNotNull);
+      expect(emitted!.controls.length, 2);
+      expect(emitted!.controls[0], MediaControl.play);
+      expect(emitted!.controls[1], MediaControl.stop);
+    });
+
+    test('should update to pause control when playing', () async {
+      final controller = StreamController<PlayerState>();
+      when(() => mockPlayer.playerStateStream)
+          .thenAnswer((_) => controller.stream);
+
+      handler = RCCAudioHandler(audioPlayer: mockPlayer);
+
+      PlaybackState? emitted;
+      handler.playbackState.listen((state) => emitted = state);
+
+      controller.add(PlayerState(true, ProcessingState.ready));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(emitted, isNotNull);
+      expect(emitted!.controls.length, 2);
+      expect(emitted!.controls[0], MediaControl.pause);
+      expect(emitted!.controls[1], MediaControl.stop);
+
+      await controller.close();
+    });
+
+    test('should update to play control when paused', () async {
+      final controller = StreamController<PlayerState>();
+      when(() => mockPlayer.playerStateStream)
+          .thenAnswer((_) => controller.stream);
+
+      handler = RCCAudioHandler(audioPlayer: mockPlayer);
+
+      PlaybackState? emitted;
+      handler.playbackState.listen((state) => emitted = state);
+
+      controller.add(PlayerState(false, ProcessingState.ready));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(emitted, isNotNull);
+      expect(emitted!.controls.length, 2);
+      expect(emitted!.controls[0], MediaControl.play);
+      expect(emitted!.controls[1], MediaControl.stop);
+
+      await controller.close();
+    });
+
+    test('should clear controls when stopped', () async {
+      when(() => mockPlayer.stop()).thenAnswer((_) async {});
+
+      PlaybackState? emitted;
+      handler.playbackState.listen((state) => emitted = state);
+
+      await handler.stop();
+
+      expect(emitted, isNotNull);
+      expect(emitted!.controls, isEmpty);
+    });
+  });
 }

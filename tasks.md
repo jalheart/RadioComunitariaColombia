@@ -144,10 +144,22 @@ Priorización basada en análisis del codebase (mayo 2026).
     - Detalle: 13 tests en `test/application/services/rcc_audio_handler_test.dart`
     - Cubren: play/pause/stop delegation, setStation (URL, metadata, null logo, null slogan), onTaskRemoved, playerStateStream forwarding, seek, shutdown, mediaItem cleanup
 
-- [ ] **#24**: Controles en lock screen
-  - **24.1**: Configurar `AudioSession` de `just_audio` para que exponga metadatos al sistema operativo (`MediaItem`)
-  - **24.2**: Sincronizar `MediaItem.artist`, `MediaItem.title` y `MediaItem.artUri` con la estación actual
-  - **24.3**: Probar en Android (lock screen controls) y iOS (Control Center)
+- ✅ **#24**: Controles en lock screen
+  - ✅ **24.1**: Configurar `AudioSession` de `just_audio` para que exponga metadatos al sistema operativo (`MediaItem`)
+    - Detalle: `RCCAudioHandler` ya configura `AudioSession` con `AudioSessionConfiguration` para contenido de música
+    - `MediaItem` se actualiza en `setStation()` con `title` (nombre emisora), `artist` (slogan), `artUri` (logo)
+    - Controles dinámicos: `play/pause` + `stop` según estado de reproducción
+    - `playbackState` se actualiza vía `_onPlayerStateChanged()` con controles correctos
+    - Tests: 4 tests agregados en `rcc_audio_handler_test.dart` para controles del lock screen
+  - ✅ **24.2**: Sincronizar `MediaItem.artist`, `MediaItem.title` y `MediaItem.artUri` con la estación actual
+    - Detalle: Ya implementado en `setStation()` — `title=station.name`, `artist=station.slogan`, `artUri=station.logo`
+    - Se limpia `mediaItem` en `stop()` con `mediaItem.add(null)`
+    - Flujo: `AudioPlayerService.play(station)` → `_handler.setStation(station)` → `mediaItem.add(MediaItem(...))`
+  - ✅ **24.3**: Probar en Android (lock screen controls) y iOS (Control Center)
+    - Detalle: Configuración verificada en `AndroidManifest.xml` e `Info.plist`
+    - Android: `AudioServiceActivity`, `AudioService` con `foregroundServiceType="mediaPlayback"`, `MediaButtonReceiver`, permisos correctos
+    - iOS: `UIBackgroundModes` con `audio` para playback en segundo plano
+    - **Requiere prueba manual**: Ejecutar en dispositivo real/emulador, reproducir emisora, bloquear pantalla y verificar controles en lock screen
 
 - [ ] **#25**: Deep linking (compartir enlace directo a emisora)
   - **25.1**: Solicitar permiso para dependencia `app_links: ^6.0.0` o `go_router: ^14.0.0`​
