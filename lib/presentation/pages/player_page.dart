@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../../application/services/audio_player_service.dart';
 import '../../application/services/favorites_notifier.dart';
 import '../../domain/entities/radio_station.dart';
+import '../../domain/entities/station_metadata.dart';
+import '../../infrastructure/datasources/station_metadata_remote_datasource.dart';
 
 class PlayerPage extends StatefulWidget {
   final RadioStation station;
@@ -26,6 +28,8 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   late final AnimationController _spectrumController;
   final List<double> _spectrumData = List.filled(20, 0.1);
   Timer? _spectrumTimer;
+  StationMetadata? _metadata;
+  bool _metadataLoading = false;
 
   @override
   void initState() {
@@ -42,7 +46,24 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           _startSpectrumSimulation();
         }
       });
+      _loadMetadata();
     });
+  }
+
+  Future<void> _loadMetadata() async {
+    if (widget.station.port == null || widget.station.port!.isEmpty) return;
+
+    setState(() => _metadataLoading = true);
+
+    final dataSource = StationMetadataRemoteDataSource();
+    final metadata = await dataSource.fetchMetadata(widget.station.port!);
+
+    if (mounted) {
+      setState(() {
+        _metadata = metadata;
+        _metadataLoading = false;
+      });
+    }
   }
 
   @override
@@ -115,13 +136,14 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
   }
 
   Widget _buildLogo() {
-    final logo = widget.station.logo;
-    
+    final art = _metadata?.art;
+    final logo = (art != null && art.isNotEmpty) ? art : widget.station.logo;
+
     return Consumer<AudioPlayerService>(
       builder: (context, audioService, _) {
         final error = audioService.error;
         final isLoading = audioService.isLoading;
-        
+
         return Stack(
           children: [
             Container(
@@ -197,7 +219,7 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           textAlign: TextAlign.center,
         ),
         if (widget.station.slogan != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             widget.station.slogan!,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -206,7 +228,68 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
             textAlign: TextAlign.center,
           ),
         ],
+        if (_metadata != null && _metadata!.title != null && _metadata!.title!.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            _metadata!.title!,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        if (_metadata != null) ...[
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildMetadataChip(
+                Icons.headphones,
+                '${_metadata!.listeners}',
+              ),
+              const SizedBox(width: 16),
+              _buildMetadataChip(
+                Icons.speed,
+                '${_metadata!.bitrate} kbps',
+              ),
+            ],
+          ),
+        ],
+        if (_metadataLoading) ...[
+          const SizedBox(height: 12),
+          const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ],
       ],
+    );
+  }
+
+  Widget _buildMetadataChip(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

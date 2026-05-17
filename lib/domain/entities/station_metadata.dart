@@ -21,14 +21,21 @@ class StationMetadata {
     return true;
   }
 
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
   factory StationMetadata.fromJson(Map<String, dynamic> json) {
     return StationMetadata(
       history: List<String>.from(json['history'] ?? []),
       title: json['title'] as String?,
       art: json['art'] as String?,
-      ulisteners: json['ulisteners'] as int? ?? 0,
-      listeners: json['listeners'] as int? ?? 0,
-      bitrate: json['bitrate'] as int? ?? 0,
+      ulisteners: _parseInt(json['ulisteners'] ?? json['ulistener']),
+      listeners: _parseInt(json['listeners']),
+      bitrate: _parseInt(json['bitrate']),
     );
   }
 

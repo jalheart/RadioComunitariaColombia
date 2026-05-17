@@ -52,7 +52,7 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
 
 ### Fase 2 — Infrastructure Layer
 
-- [ ] **2.1**: Crear `StationMetadataRemoteDataSource` en `lib/infrastructure/datasources/station_metadata_remote_datasource.dart`
+- [x] **2.1**: Crear `StationMetadataRemoteDataSource` en `lib/infrastructure/datasources/station_metadata_remote_datasource.dart`
   - Método `Future<StationMetadata?> fetchMetadata(String port)`
   - Usar `http.Client` para GET a `radioInfoEndpoint + port`
   - Timeout de 5 segundos
@@ -61,35 +61,35 @@ Actualmente el app obtiene la lista de emisoras desde un JSON en Dropbox. Cada e
   - Si JSON inválido → retornar `null`
   - Si JSON válido → parsear con `StationMetadata.fromJson()` y retornarlo
 
-- [ ] **2.2**: Agregar método `getStationMetadata` a `RadioStationRepository` (interfaz) en `lib/domain/repositories/radio_station_repository.dart`
+- [x] **2.2**: Agregar método `getStationMetadata` a `RadioStationRepository` (interfaz) en `lib/domain/repositories/radio_station_repository.dart`
   - `Future<StationMetadata?> getStationMetadata(String port)`
 
-- [ ] **2.3**: Implementar `getStationMetadata` en `RadioStationRepositoryImpl`
+- [x] **2.3**: Implementar `getStationMetadata` en `RadioStationRepositoryImpl`
   - Delegar a `StationMetadataRemoteDataSource.fetchMetadata(port)`
 
 ### Fase 3 — Application Layer
 
-- [ ] **3.1**: Crear `GetStationMetadataUseCase` en `lib/application/usecases/get_station_metadata_usecase.dart`
+- [x] **3.1**: Crear `GetStationMetadataUseCase` en `lib/application/usecases/get_station_metadata_usecase.dart`
   - Método `Future<StationMetadata?> call(String port)`
   - Dependencia: `RadioStationRepository`
 
-- [ ] **3.2**: Crear `StationMetadataNotifier` (ChangeNotifier/Provider) en `lib/application/services/station_metadata_notifier.dart`
+- [x] **3.2**: Crear `StationMetadataNotifier` (ChangeNotifier/Provider) en `lib/application/services/station_metadata_notifier.dart`
   - Estado: `StationMetadata?` para la emisora actual, `bool isLoading`, `String? error`
   - Método `Future<void> fetchMetadata(String port)` que llama al use case
   - Exponer `StationMetadata?` para que la UI lo consuma
 
 ### Fase 4 — Reemplazar Health Check Actual
 
-- [ ] **4.1**: Eliminar `_checkStreams()` y `_checkStream()` de `_RadioStationListPageState` en `main.dart`
+- [x] **4.1**: Eliminar `_checkStreams()` y `_checkStream()` de `_RadioStationListPageState` en `main.dart`
   - Detalle: Ya no se necesita el HEAD request simple; la metadata endpoint será la fuente de verdad de online/offline
 
-- [ ] **4.2**: Migrar el status indicator en la lista para que use `StationMetadataNotifier` o un map de `Map<String, StationMetadata>`
+- [x] **4.2**: Migrar el status indicator en la lista para que use `AllStationsMetadataNotifier`
   - Opción: Crear un `AllStationsMetadataNotifier` que itere sobre todas las emisoras y fetchée metadata para cada una
   - El status badge (green/red/grey) debe reflejar `metadata.isOnline`
 
 ### Fase 5 — Mostrar Metadata en PlayerPage
 
-- [ ] **5.1**: Consumir `StationMetadataNotifier` en `PlayerPage`
+- [x] **5.1**: Consumir `StationMetadataNotifier` en `PlayerPage`
   - Mostrar `title` (canción actual) debajo del nombre de la emisora
   - Mostrar `listeners` / `ulisteners` como contador de oyentes en vivo
   - Mostrar `bitrate` formateado (ej. "128 kbps")
